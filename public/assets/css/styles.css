@@ -1,1 +1,6 @@
 @import "tailwindcss";
+@import "@nuxt/ui";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
