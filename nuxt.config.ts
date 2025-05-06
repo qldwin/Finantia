@@ -11,4 +11,7 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  build: {
+    transpile: ['@prisma/client'],
+  },
 });
