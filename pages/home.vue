@@ -17,6 +17,8 @@
 </template>
 <script setup lang="ts">
 import {ref} from 'vue';
+import { PrismaClient } from '@prisma/client';
+const Prisma = new PrismaClient();
 
 const balance = ref(0);
 const items = ref([{label: 'Débit', value: 'debit'}, {label: 'Crédit', value: 'credit'}]);
@@ -31,4 +33,7 @@ const applyTransaction = () => {
       balance.value += numericAmount;
     }
 }
+
+Prisma.$connect()
+
 </script>

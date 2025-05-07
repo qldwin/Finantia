@@ -5,13 +5,13 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   css: ['~/public/assets/css/styles.css'],
   devtools: { enabled: true },
-  modules: ['@nuxt/ui'],
+  modules: [
+    '@nuxt/ui',
+    '@prisma/nuxt'  // Ajoutez le module Prisma ici
+  ],
   vite: {
     plugins: [
       tailwindcss(),
     ],
-  },
-  build: {
-    transpile: ['@prisma/client'],
   },
 });
