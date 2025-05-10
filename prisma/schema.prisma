@@ -21,7 +21,7 @@ model User {
   password   String
   accounts   Account[]
   budgets    Budget[]
-  creadtedAt DateTime  @default(now())
+  createdAt DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
 
@@ -42,12 +42,12 @@ model Account {
 model HistoryTransact {
   id              Int       @id @default(autoincrement())
   accountId       Int
+  account         Account   @relation(fields: [accountId], references: [id])
   transactionType String
   amount          Decimal   @db.Decimal(15, 3)
   date            DateTime  @default(now())
-  transactions    Account[]
   description     String?
-  createdAd       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
 }
 
 model Budget {

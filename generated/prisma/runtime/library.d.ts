@@ -2286,6 +2286,7 @@ declare enum ModelAction {
     delete = "delete",
     deleteMany = "deleteMany",
     groupBy = "groupBy",
+    count = "count",// TODO: count does not actually exist in DMMF
     aggregate = "aggregate",
     findRaw = "findRaw",
     aggregateRaw = "aggregateRaw"
@@ -2774,7 +2775,9 @@ declare type QueryMiddlewareParams = {
     model?: string;
     /** The action that is being handled */
     action: Action;
+    /** TODO what is this */
     dataPath: string[];
+    /** TODO what is this */
     runInTransaction: boolean;
     args?: UserArgs_2;
 };

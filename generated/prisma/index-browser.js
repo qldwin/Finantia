@@ -125,7 +125,7 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   name: 'name',
   password: 'password',
-  creadtedAt: 'creadtedAt',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
@@ -147,7 +147,7 @@ exports.Prisma.HistoryTransactScalarFieldEnum = {
   amount: 'amount',
   date: 'date',
   description: 'description',
-  createdAd: 'createdAd'
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.BudgetScalarFieldEnum = {

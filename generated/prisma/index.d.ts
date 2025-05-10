@@ -1491,37 +1491,6 @@ export namespace Prisma {
 
 
   /**
-   * Count Type HistoryTransactCountOutputType
-   */
-
-  export type HistoryTransactCountOutputType = {
-    transactions: number
-  }
-
-  export type HistoryTransactCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    transactions?: boolean | HistoryTransactCountOutputTypeCountTransactionsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * HistoryTransactCountOutputType without action
-   */
-  export type HistoryTransactCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the HistoryTransactCountOutputType
-     */
-    select?: HistoryTransactCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * HistoryTransactCountOutputType without action
-   */
-  export type HistoryTransactCountOutputTypeCountTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AccountWhereInput
-  }
-
-
-  /**
    * Count Type BudgetCountOutputType
    */
 
@@ -1621,7 +1590,7 @@ export namespace Prisma {
     email: string | null
     name: string | null
     password: string | null
-    creadtedAt: Date | null
+    createdAt: Date | null
     updatedAt: Date | null
   }
 
@@ -1630,7 +1599,7 @@ export namespace Prisma {
     email: string | null
     name: string | null
     password: string | null
-    creadtedAt: Date | null
+    createdAt: Date | null
     updatedAt: Date | null
   }
 
@@ -1639,7 +1608,7 @@ export namespace Prisma {
     email: number
     name: number
     password: number
-    creadtedAt: number
+    createdAt: number
     updatedAt: number
     _all: number
   }
@@ -1658,7 +1627,7 @@ export namespace Prisma {
     email?: true
     name?: true
     password?: true
-    creadtedAt?: true
+    createdAt?: true
     updatedAt?: true
   }
 
@@ -1667,7 +1636,7 @@ export namespace Prisma {
     email?: true
     name?: true
     password?: true
-    creadtedAt?: true
+    createdAt?: true
     updatedAt?: true
   }
 
@@ -1676,7 +1645,7 @@ export namespace Prisma {
     email?: true
     name?: true
     password?: true
-    creadtedAt?: true
+    createdAt?: true
     updatedAt?: true
     _all?: true
   }
@@ -1772,7 +1741,7 @@ export namespace Prisma {
     email: string
     name: string | null
     password: string
-    creadtedAt: Date
+    createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
@@ -1800,7 +1769,7 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     password?: boolean
-    creadtedAt?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
     accounts?: boolean | User$accountsArgs<ExtArgs>
     budgets?: boolean | User$budgetsArgs<ExtArgs>
@@ -1812,7 +1781,7 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     password?: boolean
-    creadtedAt?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -1821,7 +1790,7 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     password?: boolean
-    creadtedAt?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -1830,11 +1799,11 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     password?: boolean
-    creadtedAt?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "password" | "creadtedAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     budgets?: boolean | User$budgetsArgs<ExtArgs>
@@ -1854,7 +1823,7 @@ export namespace Prisma {
       email: string
       name: string | null
       password: string
-      creadtedAt: Date
+      createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -2285,7 +2254,7 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
-    readonly creadtedAt: FieldRef<"User", 'DateTime'>
+    readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
     
@@ -3969,7 +3938,7 @@ export namespace Prisma {
     amount: Decimal | null
     date: Date | null
     description: string | null
-    createdAd: Date | null
+    createdAt: Date | null
   }
 
   export type HistoryTransactMaxAggregateOutputType = {
@@ -3979,7 +3948,7 @@ export namespace Prisma {
     amount: Decimal | null
     date: Date | null
     description: string | null
-    createdAd: Date | null
+    createdAt: Date | null
   }
 
   export type HistoryTransactCountAggregateOutputType = {
@@ -3989,7 +3958,7 @@ export namespace Prisma {
     amount: number
     date: number
     description: number
-    createdAd: number
+    createdAt: number
     _all: number
   }
 
@@ -4013,7 +3982,7 @@ export namespace Prisma {
     amount?: true
     date?: true
     description?: true
-    createdAd?: true
+    createdAt?: true
   }
 
   export type HistoryTransactMaxAggregateInputType = {
@@ -4023,7 +3992,7 @@ export namespace Prisma {
     amount?: true
     date?: true
     description?: true
-    createdAd?: true
+    createdAt?: true
   }
 
   export type HistoryTransactCountAggregateInputType = {
@@ -4033,7 +4002,7 @@ export namespace Prisma {
     amount?: true
     date?: true
     description?: true
-    createdAd?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -4130,7 +4099,7 @@ export namespace Prisma {
     amount: Decimal
     date: Date
     description: string | null
-    createdAd: Date
+    createdAt: Date
     _count: HistoryTransactCountAggregateOutputType | null
     _avg: HistoryTransactAvgAggregateOutputType | null
     _sum: HistoryTransactSumAggregateOutputType | null
@@ -4159,9 +4128,8 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     description?: boolean
-    createdAd?: boolean
-    transactions?: boolean | HistoryTransact$transactionsArgs<ExtArgs>
-    _count?: boolean | HistoryTransactCountOutputTypeDefaultArgs<ExtArgs>
+    createdAt?: boolean
+    account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["historyTransact"]>
 
   export type HistoryTransactSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4171,7 +4139,8 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     description?: boolean
-    createdAd?: boolean
+    createdAt?: boolean
+    account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["historyTransact"]>
 
   export type HistoryTransactSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4181,7 +4150,8 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     description?: boolean
-    createdAd?: boolean
+    createdAt?: boolean
+    account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["historyTransact"]>
 
   export type HistoryTransactSelectScalar = {
@@ -4191,21 +4161,24 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     description?: boolean
-    createdAd?: boolean
+    createdAt?: boolean
   }
 
-  export type HistoryTransactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "transactionType" | "amount" | "date" | "description" | "createdAd", ExtArgs["result"]["historyTransact"]>
+  export type HistoryTransactOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "transactionType" | "amount" | "date" | "description" | "createdAt", ExtArgs["result"]["historyTransact"]>
   export type HistoryTransactInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    transactions?: boolean | HistoryTransact$transactionsArgs<ExtArgs>
-    _count?: boolean | HistoryTransactCountOutputTypeDefaultArgs<ExtArgs>
+    account?: boolean | AccountDefaultArgs<ExtArgs>
   }
-  export type HistoryTransactIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type HistoryTransactIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type HistoryTransactIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AccountDefaultArgs<ExtArgs>
+  }
+  export type HistoryTransactIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AccountDefaultArgs<ExtArgs>
+  }
 
   export type $HistoryTransactPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "HistoryTransact"
     objects: {
-      transactions: Prisma.$AccountPayload<ExtArgs>[]
+      account: Prisma.$AccountPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -4214,7 +4187,7 @@ export namespace Prisma {
       amount: Prisma.Decimal
       date: Date
       description: string | null
-      createdAd: Date
+      createdAt: Date
     }, ExtArgs["result"]["historyTransact"]>
     composites: {}
   }
@@ -4609,7 +4582,7 @@ export namespace Prisma {
    */
   export interface Prisma__HistoryTransactClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    transactions<T extends HistoryTransact$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, HistoryTransact$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    account<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4645,7 +4618,7 @@ export namespace Prisma {
     readonly amount: FieldRef<"HistoryTransact", 'Decimal'>
     readonly date: FieldRef<"HistoryTransact", 'DateTime'>
     readonly description: FieldRef<"HistoryTransact", 'String'>
-    readonly createdAd: FieldRef<"HistoryTransact", 'DateTime'>
+    readonly createdAt: FieldRef<"HistoryTransact", 'DateTime'>
   }
     
 
@@ -4895,6 +4868,10 @@ export namespace Prisma {
      */
     data: HistoryTransactCreateManyInput | HistoryTransactCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoryTransactIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4965,6 +4942,10 @@ export namespace Prisma {
      * Limit how many HistoryTransacts to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoryTransactIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -5031,30 +5012,6 @@ export namespace Prisma {
      * Limit how many HistoryTransacts to delete.
      */
     limit?: number
-  }
-
-  /**
-   * HistoryTransact.transactions
-   */
-  export type HistoryTransact$transactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Account
-     */
-    select?: AccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Account
-     */
-    omit?: AccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccountInclude<ExtArgs> | null
-    where?: AccountWhereInput
-    orderBy?: AccountOrderByWithRelationInput | AccountOrderByWithRelationInput[]
-    cursor?: AccountWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AccountScalarFieldEnum | AccountScalarFieldEnum[]
   }
 
   /**
@@ -9513,7 +9470,7 @@ export namespace Prisma {
     email: 'email',
     name: 'name',
     password: 'password',
-    creadtedAt: 'creadtedAt',
+    createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
@@ -9541,7 +9498,7 @@ export namespace Prisma {
     amount: 'amount',
     date: 'date',
     description: 'description',
-    createdAd: 'createdAd'
+    createdAt: 'createdAt'
   };
 
   export type HistoryTransactScalarFieldEnum = (typeof HistoryTransactScalarFieldEnum)[keyof typeof HistoryTransactScalarFieldEnum]
@@ -9697,7 +9654,7 @@ export namespace Prisma {
     email?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
-    creadtedAt?: DateTimeFilter<"User"> | Date | string
+    createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     accounts?: AccountListRelationFilter
     budgets?: BudgetListRelationFilter
@@ -9708,7 +9665,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrderInput | SortOrder
     password?: SortOrder
-    creadtedAt?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
     accounts?: AccountOrderByRelationAggregateInput
     budgets?: BudgetOrderByRelationAggregateInput
@@ -9722,7 +9679,7 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringNullableFilter<"User"> | string | null
     password?: StringFilter<"User"> | string
-    creadtedAt?: DateTimeFilter<"User"> | Date | string
+    createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     accounts?: AccountListRelationFilter
     budgets?: BudgetListRelationFilter
@@ -9733,7 +9690,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrderInput | SortOrder
     password?: SortOrder
-    creadtedAt?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
@@ -9750,7 +9707,7 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     password?: StringWithAggregatesFilter<"User"> | string
-    creadtedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
 
@@ -9842,8 +9799,8 @@ export namespace Prisma {
     amount?: DecimalFilter<"HistoryTransact"> | Decimal | DecimalJsLike | number | string
     date?: DateTimeFilter<"HistoryTransact"> | Date | string
     description?: StringNullableFilter<"HistoryTransact"> | string | null
-    createdAd?: DateTimeFilter<"HistoryTransact"> | Date | string
-    transactions?: AccountListRelationFilter
+    createdAt?: DateTimeFilter<"HistoryTransact"> | Date | string
+    account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
   }
 
   export type HistoryTransactOrderByWithRelationInput = {
@@ -9853,8 +9810,8 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     description?: SortOrderInput | SortOrder
-    createdAd?: SortOrder
-    transactions?: AccountOrderByRelationAggregateInput
+    createdAt?: SortOrder
+    account?: AccountOrderByWithRelationInput
   }
 
   export type HistoryTransactWhereUniqueInput = Prisma.AtLeast<{
@@ -9867,8 +9824,8 @@ export namespace Prisma {
     amount?: DecimalFilter<"HistoryTransact"> | Decimal | DecimalJsLike | number | string
     date?: DateTimeFilter<"HistoryTransact"> | Date | string
     description?: StringNullableFilter<"HistoryTransact"> | string | null
-    createdAd?: DateTimeFilter<"HistoryTransact"> | Date | string
-    transactions?: AccountListRelationFilter
+    createdAt?: DateTimeFilter<"HistoryTransact"> | Date | string
+    account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
   }, "id">
 
   export type HistoryTransactOrderByWithAggregationInput = {
@@ -9878,7 +9835,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     description?: SortOrderInput | SortOrder
-    createdAd?: SortOrder
+    createdAt?: SortOrder
     _count?: HistoryTransactCountOrderByAggregateInput
     _avg?: HistoryTransactAvgOrderByAggregateInput
     _max?: HistoryTransactMaxOrderByAggregateInput
@@ -9896,7 +9853,7 @@ export namespace Prisma {
     amount?: DecimalWithAggregatesFilter<"HistoryTransact"> | Decimal | DecimalJsLike | number | string
     date?: DateTimeWithAggregatesFilter<"HistoryTransact"> | Date | string
     description?: StringNullableWithAggregatesFilter<"HistoryTransact"> | string | null
-    createdAd?: DateTimeWithAggregatesFilter<"HistoryTransact"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"HistoryTransact"> | Date | string
   }
 
   export type BudgetWhereInput = {
@@ -10125,7 +10082,7 @@ export namespace Prisma {
     email: string
     name?: string | null
     password: string
-    creadtedAt?: Date | string
+    createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
     budgets?: BudgetCreateNestedManyWithoutUserInput
@@ -10136,7 +10093,7 @@ export namespace Prisma {
     email: string
     name?: string | null
     password: string
-    creadtedAt?: Date | string
+    createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     budgets?: BudgetUncheckedCreateNestedManyWithoutUserInput
@@ -10146,7 +10103,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
     budgets?: BudgetUpdateManyWithoutUserNestedInput
@@ -10157,7 +10114,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     budgets?: BudgetUncheckedUpdateManyWithoutUserNestedInput
@@ -10168,7 +10125,7 @@ export namespace Prisma {
     email: string
     name?: string | null
     password: string
-    creadtedAt?: Date | string
+    createdAt?: Date | string
     updatedAt?: Date | string
   }
 
@@ -10176,7 +10133,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -10185,7 +10142,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -10198,7 +10155,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutAccountsInput
     categories?: AccountCategoryCreateNestedManyWithoutAccountInput
-    historyTransacts?: HistoryTransactCreateNestedManyWithoutTransactionsInput
+    historyTransacts?: HistoryTransactCreateNestedManyWithoutAccountInput
   }
 
   export type AccountUncheckedCreateInput = {
@@ -10211,7 +10168,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     categories?: AccountCategoryUncheckedCreateNestedManyWithoutAccountInput
-    historyTransacts?: HistoryTransactUncheckedCreateNestedManyWithoutTransactionsInput
+    historyTransacts?: HistoryTransactUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AccountUpdateInput = {
@@ -10223,7 +10180,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAccountsNestedInput
     categories?: AccountCategoryUpdateManyWithoutAccountNestedInput
-    historyTransacts?: HistoryTransactUpdateManyWithoutTransactionsNestedInput
+    historyTransacts?: HistoryTransactUpdateManyWithoutAccountNestedInput
   }
 
   export type AccountUncheckedUpdateInput = {
@@ -10236,7 +10193,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categories?: AccountCategoryUncheckedUpdateManyWithoutAccountNestedInput
-    historyTransacts?: HistoryTransactUncheckedUpdateManyWithoutTransactionsNestedInput
+    historyTransacts?: HistoryTransactUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type AccountCreateManyInput = {
@@ -10271,13 +10228,12 @@ export namespace Prisma {
   }
 
   export type HistoryTransactCreateInput = {
-    accountId: number
     transactionType: string
     amount: Decimal | DecimalJsLike | number | string
     date?: Date | string
     description?: string | null
-    createdAd?: Date | string
-    transactions?: AccountCreateNestedManyWithoutHistoryTransactsInput
+    createdAt?: Date | string
+    account: AccountCreateNestedOneWithoutHistoryTransactsInput
   }
 
   export type HistoryTransactUncheckedCreateInput = {
@@ -10287,18 +10243,16 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     date?: Date | string
     description?: string | null
-    createdAd?: Date | string
-    transactions?: AccountUncheckedCreateNestedManyWithoutHistoryTransactsInput
+    createdAt?: Date | string
   }
 
   export type HistoryTransactUpdateInput = {
-    accountId?: IntFieldUpdateOperationsInput | number
     transactionType?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAd?: DateTimeFieldUpdateOperationsInput | Date | string
-    transactions?: AccountUpdateManyWithoutHistoryTransactsNestedInput
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: AccountUpdateOneRequiredWithoutHistoryTransactsNestedInput
   }
 
   export type HistoryTransactUncheckedUpdateInput = {
@@ -10308,8 +10262,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAd?: DateTimeFieldUpdateOperationsInput | Date | string
-    transactions?: AccountUncheckedUpdateManyWithoutHistoryTransactsNestedInput
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type HistoryTransactCreateManyInput = {
@@ -10319,16 +10272,15 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     date?: Date | string
     description?: string | null
-    createdAd?: Date | string
+    createdAt?: Date | string
   }
 
   export type HistoryTransactUpdateManyMutationInput = {
-    accountId?: IntFieldUpdateOperationsInput | number
     transactionType?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAd?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type HistoryTransactUncheckedUpdateManyInput = {
@@ -10338,7 +10290,7 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAd?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetCreateInput = {
@@ -10622,7 +10574,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrder
     password?: SortOrder
-    creadtedAt?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -10635,7 +10587,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrder
     password?: SortOrder
-    creadtedAt?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -10644,7 +10596,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrder
     password?: SortOrder
-    creadtedAt?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -10826,6 +10778,11 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
+  export type AccountScalarRelationFilter = {
+    is?: AccountWhereInput
+    isNot?: AccountWhereInput
+  }
+
   export type HistoryTransactCountOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
@@ -10833,7 +10790,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     description?: SortOrder
-    createdAd?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type HistoryTransactAvgOrderByAggregateInput = {
@@ -10849,7 +10806,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     description?: SortOrder
-    createdAd?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type HistoryTransactMinOrderByAggregateInput = {
@@ -10859,7 +10816,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     description?: SortOrder
-    createdAd?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type HistoryTransactSumOrderByAggregateInput = {
@@ -11006,11 +10963,6 @@ export namespace Prisma {
   export type BudgetCategorySumOrderByAggregateInput = {
     budgetId?: SortOrder
     categoryId?: SortOrder
-  }
-
-  export type AccountScalarRelationFilter = {
-    is?: AccountWhereInput
-    isNot?: AccountWhereInput
   }
 
   export type AccountCategoryAccountIdCategoryIdCompoundUniqueInput = {
@@ -11160,9 +11112,10 @@ export namespace Prisma {
     connect?: AccountCategoryWhereUniqueInput | AccountCategoryWhereUniqueInput[]
   }
 
-  export type HistoryTransactCreateNestedManyWithoutTransactionsInput = {
-    create?: XOR<HistoryTransactCreateWithoutTransactionsInput, HistoryTransactUncheckedCreateWithoutTransactionsInput> | HistoryTransactCreateWithoutTransactionsInput[] | HistoryTransactUncheckedCreateWithoutTransactionsInput[]
-    connectOrCreate?: HistoryTransactCreateOrConnectWithoutTransactionsInput | HistoryTransactCreateOrConnectWithoutTransactionsInput[]
+  export type HistoryTransactCreateNestedManyWithoutAccountInput = {
+    create?: XOR<HistoryTransactCreateWithoutAccountInput, HistoryTransactUncheckedCreateWithoutAccountInput> | HistoryTransactCreateWithoutAccountInput[] | HistoryTransactUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: HistoryTransactCreateOrConnectWithoutAccountInput | HistoryTransactCreateOrConnectWithoutAccountInput[]
+    createMany?: HistoryTransactCreateManyAccountInputEnvelope
     connect?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
   }
 
@@ -11173,9 +11126,10 @@ export namespace Prisma {
     connect?: AccountCategoryWhereUniqueInput | AccountCategoryWhereUniqueInput[]
   }
 
-  export type HistoryTransactUncheckedCreateNestedManyWithoutTransactionsInput = {
-    create?: XOR<HistoryTransactCreateWithoutTransactionsInput, HistoryTransactUncheckedCreateWithoutTransactionsInput> | HistoryTransactCreateWithoutTransactionsInput[] | HistoryTransactUncheckedCreateWithoutTransactionsInput[]
-    connectOrCreate?: HistoryTransactCreateOrConnectWithoutTransactionsInput | HistoryTransactCreateOrConnectWithoutTransactionsInput[]
+  export type HistoryTransactUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<HistoryTransactCreateWithoutAccountInput, HistoryTransactUncheckedCreateWithoutAccountInput> | HistoryTransactCreateWithoutAccountInput[] | HistoryTransactUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: HistoryTransactCreateOrConnectWithoutAccountInput | HistoryTransactCreateOrConnectWithoutAccountInput[]
+    createMany?: HistoryTransactCreateManyAccountInputEnvelope
     connect?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
   }
 
@@ -11209,16 +11163,17 @@ export namespace Prisma {
     deleteMany?: AccountCategoryScalarWhereInput | AccountCategoryScalarWhereInput[]
   }
 
-  export type HistoryTransactUpdateManyWithoutTransactionsNestedInput = {
-    create?: XOR<HistoryTransactCreateWithoutTransactionsInput, HistoryTransactUncheckedCreateWithoutTransactionsInput> | HistoryTransactCreateWithoutTransactionsInput[] | HistoryTransactUncheckedCreateWithoutTransactionsInput[]
-    connectOrCreate?: HistoryTransactCreateOrConnectWithoutTransactionsInput | HistoryTransactCreateOrConnectWithoutTransactionsInput[]
-    upsert?: HistoryTransactUpsertWithWhereUniqueWithoutTransactionsInput | HistoryTransactUpsertWithWhereUniqueWithoutTransactionsInput[]
+  export type HistoryTransactUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<HistoryTransactCreateWithoutAccountInput, HistoryTransactUncheckedCreateWithoutAccountInput> | HistoryTransactCreateWithoutAccountInput[] | HistoryTransactUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: HistoryTransactCreateOrConnectWithoutAccountInput | HistoryTransactCreateOrConnectWithoutAccountInput[]
+    upsert?: HistoryTransactUpsertWithWhereUniqueWithoutAccountInput | HistoryTransactUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: HistoryTransactCreateManyAccountInputEnvelope
     set?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
     disconnect?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
     delete?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
     connect?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
-    update?: HistoryTransactUpdateWithWhereUniqueWithoutTransactionsInput | HistoryTransactUpdateWithWhereUniqueWithoutTransactionsInput[]
-    updateMany?: HistoryTransactUpdateManyWithWhereWithoutTransactionsInput | HistoryTransactUpdateManyWithWhereWithoutTransactionsInput[]
+    update?: HistoryTransactUpdateWithWhereUniqueWithoutAccountInput | HistoryTransactUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: HistoryTransactUpdateManyWithWhereWithoutAccountInput | HistoryTransactUpdateManyWithWhereWithoutAccountInput[]
     deleteMany?: HistoryTransactScalarWhereInput | HistoryTransactScalarWhereInput[]
   }
 
@@ -11236,29 +11191,24 @@ export namespace Prisma {
     deleteMany?: AccountCategoryScalarWhereInput | AccountCategoryScalarWhereInput[]
   }
 
-  export type HistoryTransactUncheckedUpdateManyWithoutTransactionsNestedInput = {
-    create?: XOR<HistoryTransactCreateWithoutTransactionsInput, HistoryTransactUncheckedCreateWithoutTransactionsInput> | HistoryTransactCreateWithoutTransactionsInput[] | HistoryTransactUncheckedCreateWithoutTransactionsInput[]
-    connectOrCreate?: HistoryTransactCreateOrConnectWithoutTransactionsInput | HistoryTransactCreateOrConnectWithoutTransactionsInput[]
-    upsert?: HistoryTransactUpsertWithWhereUniqueWithoutTransactionsInput | HistoryTransactUpsertWithWhereUniqueWithoutTransactionsInput[]
+  export type HistoryTransactUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<HistoryTransactCreateWithoutAccountInput, HistoryTransactUncheckedCreateWithoutAccountInput> | HistoryTransactCreateWithoutAccountInput[] | HistoryTransactUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: HistoryTransactCreateOrConnectWithoutAccountInput | HistoryTransactCreateOrConnectWithoutAccountInput[]
+    upsert?: HistoryTransactUpsertWithWhereUniqueWithoutAccountInput | HistoryTransactUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: HistoryTransactCreateManyAccountInputEnvelope
     set?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
     disconnect?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
     delete?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
     connect?: HistoryTransactWhereUniqueInput | HistoryTransactWhereUniqueInput[]
-    update?: HistoryTransactUpdateWithWhereUniqueWithoutTransactionsInput | HistoryTransactUpdateWithWhereUniqueWithoutTransactionsInput[]
-    updateMany?: HistoryTransactUpdateManyWithWhereWithoutTransactionsInput | HistoryTransactUpdateManyWithWhereWithoutTransactionsInput[]
+    update?: HistoryTransactUpdateWithWhereUniqueWithoutAccountInput | HistoryTransactUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: HistoryTransactUpdateManyWithWhereWithoutAccountInput | HistoryTransactUpdateManyWithWhereWithoutAccountInput[]
     deleteMany?: HistoryTransactScalarWhereInput | HistoryTransactScalarWhereInput[]
   }
 
-  export type AccountCreateNestedManyWithoutHistoryTransactsInput = {
-    create?: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput> | AccountCreateWithoutHistoryTransactsInput[] | AccountUncheckedCreateWithoutHistoryTransactsInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutHistoryTransactsInput | AccountCreateOrConnectWithoutHistoryTransactsInput[]
-    connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-  }
-
-  export type AccountUncheckedCreateNestedManyWithoutHistoryTransactsInput = {
-    create?: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput> | AccountCreateWithoutHistoryTransactsInput[] | AccountUncheckedCreateWithoutHistoryTransactsInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutHistoryTransactsInput | AccountCreateOrConnectWithoutHistoryTransactsInput[]
-    connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
+  export type AccountCreateNestedOneWithoutHistoryTransactsInput = {
+    create?: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutHistoryTransactsInput
+    connect?: AccountWhereUniqueInput
   }
 
   export type DecimalFieldUpdateOperationsInput = {
@@ -11269,30 +11219,12 @@ export namespace Prisma {
     divide?: Decimal | DecimalJsLike | number | string
   }
 
-  export type AccountUpdateManyWithoutHistoryTransactsNestedInput = {
-    create?: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput> | AccountCreateWithoutHistoryTransactsInput[] | AccountUncheckedCreateWithoutHistoryTransactsInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutHistoryTransactsInput | AccountCreateOrConnectWithoutHistoryTransactsInput[]
-    upsert?: AccountUpsertWithWhereUniqueWithoutHistoryTransactsInput | AccountUpsertWithWhereUniqueWithoutHistoryTransactsInput[]
-    set?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    disconnect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    delete?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    update?: AccountUpdateWithWhereUniqueWithoutHistoryTransactsInput | AccountUpdateWithWhereUniqueWithoutHistoryTransactsInput[]
-    updateMany?: AccountUpdateManyWithWhereWithoutHistoryTransactsInput | AccountUpdateManyWithWhereWithoutHistoryTransactsInput[]
-    deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
-  }
-
-  export type AccountUncheckedUpdateManyWithoutHistoryTransactsNestedInput = {
-    create?: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput> | AccountCreateWithoutHistoryTransactsInput[] | AccountUncheckedCreateWithoutHistoryTransactsInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutHistoryTransactsInput | AccountCreateOrConnectWithoutHistoryTransactsInput[]
-    upsert?: AccountUpsertWithWhereUniqueWithoutHistoryTransactsInput | AccountUpsertWithWhereUniqueWithoutHistoryTransactsInput[]
-    set?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    disconnect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    delete?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    update?: AccountUpdateWithWhereUniqueWithoutHistoryTransactsInput | AccountUpdateWithWhereUniqueWithoutHistoryTransactsInput[]
-    updateMany?: AccountUpdateManyWithWhereWithoutHistoryTransactsInput | AccountUpdateManyWithWhereWithoutHistoryTransactsInput[]
-    deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
+  export type AccountUpdateOneRequiredWithoutHistoryTransactsNestedInput = {
+    create?: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutHistoryTransactsInput
+    upsert?: AccountUpsertWithoutHistoryTransactsInput
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutHistoryTransactsInput, AccountUpdateWithoutHistoryTransactsInput>, AccountUncheckedUpdateWithoutHistoryTransactsInput>
   }
 
   export type UserCreateNestedOneWithoutBudgetsInput = {
@@ -11678,7 +11610,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     categories?: AccountCategoryCreateNestedManyWithoutAccountInput
-    historyTransacts?: HistoryTransactCreateNestedManyWithoutTransactionsInput
+    historyTransacts?: HistoryTransactCreateNestedManyWithoutAccountInput
   }
 
   export type AccountUncheckedCreateWithoutUserInput = {
@@ -11690,7 +11622,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     categories?: AccountCategoryUncheckedCreateNestedManyWithoutAccountInput
-    historyTransacts?: HistoryTransactUncheckedCreateNestedManyWithoutTransactionsInput
+    historyTransacts?: HistoryTransactUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AccountCreateOrConnectWithoutUserInput = {
@@ -11798,7 +11730,7 @@ export namespace Prisma {
     email: string
     name?: string | null
     password: string
-    creadtedAt?: Date | string
+    createdAt?: Date | string
     updatedAt?: Date | string
     budgets?: BudgetCreateNestedManyWithoutUserInput
   }
@@ -11808,7 +11740,7 @@ export namespace Prisma {
     email: string
     name?: string | null
     password: string
-    creadtedAt?: Date | string
+    createdAt?: Date | string
     updatedAt?: Date | string
     budgets?: BudgetUncheckedCreateNestedManyWithoutUserInput
   }
@@ -11836,28 +11768,31 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type HistoryTransactCreateWithoutTransactionsInput = {
-    accountId: number
+  export type HistoryTransactCreateWithoutAccountInput = {
     transactionType: string
     amount: Decimal | DecimalJsLike | number | string
     date?: Date | string
     description?: string | null
-    createdAd?: Date | string
+    createdAt?: Date | string
   }
 
-  export type HistoryTransactUncheckedCreateWithoutTransactionsInput = {
+  export type HistoryTransactUncheckedCreateWithoutAccountInput = {
     id?: number
-    accountId: number
     transactionType: string
     amount: Decimal | DecimalJsLike | number | string
     date?: Date | string
     description?: string | null
-    createdAd?: Date | string
+    createdAt?: Date | string
   }
 
-  export type HistoryTransactCreateOrConnectWithoutTransactionsInput = {
+  export type HistoryTransactCreateOrConnectWithoutAccountInput = {
     where: HistoryTransactWhereUniqueInput
-    create: XOR<HistoryTransactCreateWithoutTransactionsInput, HistoryTransactUncheckedCreateWithoutTransactionsInput>
+    create: XOR<HistoryTransactCreateWithoutAccountInput, HistoryTransactUncheckedCreateWithoutAccountInput>
+  }
+
+  export type HistoryTransactCreateManyAccountInputEnvelope = {
+    data: HistoryTransactCreateManyAccountInput | HistoryTransactCreateManyAccountInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutAccountsInput = {
@@ -11875,7 +11810,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budgets?: BudgetUpdateManyWithoutUserNestedInput
   }
@@ -11885,7 +11820,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     budgets?: BudgetUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -11914,20 +11849,20 @@ export namespace Prisma {
     categoryId?: IntFilter<"AccountCategory"> | number
   }
 
-  export type HistoryTransactUpsertWithWhereUniqueWithoutTransactionsInput = {
+  export type HistoryTransactUpsertWithWhereUniqueWithoutAccountInput = {
     where: HistoryTransactWhereUniqueInput
-    update: XOR<HistoryTransactUpdateWithoutTransactionsInput, HistoryTransactUncheckedUpdateWithoutTransactionsInput>
-    create: XOR<HistoryTransactCreateWithoutTransactionsInput, HistoryTransactUncheckedCreateWithoutTransactionsInput>
+    update: XOR<HistoryTransactUpdateWithoutAccountInput, HistoryTransactUncheckedUpdateWithoutAccountInput>
+    create: XOR<HistoryTransactCreateWithoutAccountInput, HistoryTransactUncheckedCreateWithoutAccountInput>
   }
 
-  export type HistoryTransactUpdateWithWhereUniqueWithoutTransactionsInput = {
+  export type HistoryTransactUpdateWithWhereUniqueWithoutAccountInput = {
     where: HistoryTransactWhereUniqueInput
-    data: XOR<HistoryTransactUpdateWithoutTransactionsInput, HistoryTransactUncheckedUpdateWithoutTransactionsInput>
+    data: XOR<HistoryTransactUpdateWithoutAccountInput, HistoryTransactUncheckedUpdateWithoutAccountInput>
   }
 
-  export type HistoryTransactUpdateManyWithWhereWithoutTransactionsInput = {
+  export type HistoryTransactUpdateManyWithWhereWithoutAccountInput = {
     where: HistoryTransactScalarWhereInput
-    data: XOR<HistoryTransactUpdateManyMutationInput, HistoryTransactUncheckedUpdateManyWithoutTransactionsInput>
+    data: XOR<HistoryTransactUpdateManyMutationInput, HistoryTransactUncheckedUpdateManyWithoutAccountInput>
   }
 
   export type HistoryTransactScalarWhereInput = {
@@ -11940,7 +11875,7 @@ export namespace Prisma {
     amount?: DecimalFilter<"HistoryTransact"> | Decimal | DecimalJsLike | number | string
     date?: DateTimeFilter<"HistoryTransact"> | Date | string
     description?: StringNullableFilter<"HistoryTransact"> | string | null
-    createdAd?: DateTimeFilter<"HistoryTransact"> | Date | string
+    createdAt?: DateTimeFilter<"HistoryTransact"> | Date | string
   }
 
   export type AccountCreateWithoutHistoryTransactsInput = {
@@ -11971,27 +11906,45 @@ export namespace Prisma {
     create: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput>
   }
 
-  export type AccountUpsertWithWhereUniqueWithoutHistoryTransactsInput = {
-    where: AccountWhereUniqueInput
+  export type AccountUpsertWithoutHistoryTransactsInput = {
     update: XOR<AccountUpdateWithoutHistoryTransactsInput, AccountUncheckedUpdateWithoutHistoryTransactsInput>
     create: XOR<AccountCreateWithoutHistoryTransactsInput, AccountUncheckedCreateWithoutHistoryTransactsInput>
+    where?: AccountWhereInput
   }
 
-  export type AccountUpdateWithWhereUniqueWithoutHistoryTransactsInput = {
-    where: AccountWhereUniqueInput
+  export type AccountUpdateToOneWithWhereWithoutHistoryTransactsInput = {
+    where?: AccountWhereInput
     data: XOR<AccountUpdateWithoutHistoryTransactsInput, AccountUncheckedUpdateWithoutHistoryTransactsInput>
   }
 
-  export type AccountUpdateManyWithWhereWithoutHistoryTransactsInput = {
-    where: AccountScalarWhereInput
-    data: XOR<AccountUpdateManyMutationInput, AccountUncheckedUpdateManyWithoutHistoryTransactsInput>
+  export type AccountUpdateWithoutHistoryTransactsInput = {
+    accountName?: StringFieldUpdateOperationsInput | string
+    accountType?: StringFieldUpdateOperationsInput | string
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAccountsNestedInput
+    categories?: AccountCategoryUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutHistoryTransactsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    accountName?: StringFieldUpdateOperationsInput | string
+    accountType?: StringFieldUpdateOperationsInput | string
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categories?: AccountCategoryUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type UserCreateWithoutBudgetsInput = {
     email: string
     name?: string | null
     password: string
-    creadtedAt?: Date | string
+    createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
   }
@@ -12001,7 +11954,7 @@ export namespace Prisma {
     email: string
     name?: string | null
     password: string
-    creadtedAt?: Date | string
+    createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
   }
@@ -12044,7 +11997,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
   }
@@ -12054,7 +12007,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: StringFieldUpdateOperationsInput | string
-    creadtedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -12263,7 +12216,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutAccountsInput
-    historyTransacts?: HistoryTransactCreateNestedManyWithoutTransactionsInput
+    historyTransacts?: HistoryTransactCreateNestedManyWithoutAccountInput
   }
 
   export type AccountUncheckedCreateWithoutCategoriesInput = {
@@ -12275,7 +12228,7 @@ export namespace Prisma {
     currency: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    historyTransacts?: HistoryTransactUncheckedCreateNestedManyWithoutTransactionsInput
+    historyTransacts?: HistoryTransactUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AccountCreateOrConnectWithoutCategoriesInput = {
@@ -12322,7 +12275,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAccountsNestedInput
-    historyTransacts?: HistoryTransactUpdateManyWithoutTransactionsNestedInput
+    historyTransacts?: HistoryTransactUpdateManyWithoutAccountNestedInput
   }
 
   export type AccountUncheckedUpdateWithoutCategoriesInput = {
@@ -12334,7 +12287,7 @@ export namespace Prisma {
     currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    historyTransacts?: HistoryTransactUncheckedUpdateManyWithoutTransactionsNestedInput
+    historyTransacts?: HistoryTransactUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type CategoryUpsertWithoutAccountsInput = {
@@ -12391,7 +12344,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categories?: AccountCategoryUpdateManyWithoutAccountNestedInput
-    historyTransacts?: HistoryTransactUpdateManyWithoutTransactionsNestedInput
+    historyTransacts?: HistoryTransactUpdateManyWithoutAccountNestedInput
   }
 
   export type AccountUncheckedUpdateWithoutUserInput = {
@@ -12403,7 +12356,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categories?: AccountCategoryUncheckedUpdateManyWithoutAccountNestedInput
-    historyTransacts?: HistoryTransactUncheckedUpdateManyWithoutTransactionsNestedInput
+    historyTransacts?: HistoryTransactUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type AccountUncheckedUpdateManyWithoutUserInput = {
@@ -12451,6 +12404,15 @@ export namespace Prisma {
     categoryId: number
   }
 
+  export type HistoryTransactCreateManyAccountInput = {
+    id?: number
+    transactionType: string
+    amount: Decimal | DecimalJsLike | number | string
+    date?: Date | string
+    description?: string | null
+    createdAt?: Date | string
+  }
+
   export type AccountCategoryUpdateWithoutAccountInput = {
     category?: CategoryUpdateOneRequiredWithoutAccountsNestedInput
   }
@@ -12463,67 +12425,30 @@ export namespace Prisma {
     categoryId?: IntFieldUpdateOperationsInput | number
   }
 
-  export type HistoryTransactUpdateWithoutTransactionsInput = {
-    accountId?: IntFieldUpdateOperationsInput | number
+  export type HistoryTransactUpdateWithoutAccountInput = {
     transactionType?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAd?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type HistoryTransactUncheckedUpdateWithoutTransactionsInput = {
+  export type HistoryTransactUncheckedUpdateWithoutAccountInput = {
     id?: IntFieldUpdateOperationsInput | number
-    accountId?: IntFieldUpdateOperationsInput | number
     transactionType?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAd?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type HistoryTransactUncheckedUpdateManyWithoutTransactionsInput = {
+  export type HistoryTransactUncheckedUpdateManyWithoutAccountInput = {
     id?: IntFieldUpdateOperationsInput | number
-    accountId?: IntFieldUpdateOperationsInput | number
     transactionType?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAd?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AccountUpdateWithoutHistoryTransactsInput = {
-    accountName?: StringFieldUpdateOperationsInput | string
-    accountType?: StringFieldUpdateOperationsInput | string
-    balance?: FloatFieldUpdateOperationsInput | number
-    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutAccountsNestedInput
-    categories?: AccountCategoryUpdateManyWithoutAccountNestedInput
-  }
-
-  export type AccountUncheckedUpdateWithoutHistoryTransactsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    accountName?: StringFieldUpdateOperationsInput | string
-    accountType?: StringFieldUpdateOperationsInput | string
-    balance?: FloatFieldUpdateOperationsInput | number
-    currency?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    categories?: AccountCategoryUncheckedUpdateManyWithoutAccountNestedInput
-  }
-
-  export type AccountUncheckedUpdateManyWithoutHistoryTransactsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    userId?: IntFieldUpdateOperationsInput | number
-    accountName?: StringFieldUpdateOperationsInput | string
-    accountType?: StringFieldUpdateOperationsInput | string
-    balance?: FloatFieldUpdateOperationsInput | number
-    currency?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BudgetCategoryCreateManyBudgetInput = {

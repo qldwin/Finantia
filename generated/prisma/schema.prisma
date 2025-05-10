@@ -15,14 +15,14 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique
-  name       String?
-  password   String
-  accounts   Account[]
-  budgets    Budget[]
-  creadtedAt DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String?
+  password  String
+  accounts  Account[]
+  budgets   Budget[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Account {
@@ -40,14 +40,14 @@ model Account {
 }
 
 model HistoryTransact {
-  id              Int       @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   accountId       Int
+  account         Account  @relation(fields: [accountId], references: [id])
   transactionType String
-  amount          Decimal   @db.Decimal(15, 3)
-  date            DateTime  @default(now())
-  transactions    Account[]
+  amount          Decimal  @db.Decimal(15, 3)
+  date            DateTime @default(now())
   description     String?
-  createdAd       DateTime  @default(now())
+  createdAt       DateTime @default(now())
 }
 
 model Budget {
