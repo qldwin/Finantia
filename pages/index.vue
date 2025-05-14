@@ -8,11 +8,11 @@
     </div>
   </div>
   <div class="rounded-2xl bg-gray-100 flex justify-center items-center h-70 mt-5 w-100 mr-auto ml-auto">
-    <ul>
-      <li>
+<!--    <ul>-->
+<!--      <li>-->
 
-      </li>
-    </ul>
+<!--      </li>-->
+<!--    </ul>-->
   </div>
 </template>
 
