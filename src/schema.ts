@@ -1,4 +1,5 @@
-import { pgTable, serial, text, varchar, integer, decimal, timestamp, primaryKey } from 'drizzle-orm/pg-core';
+//import { pgTable, serial, text, varchar, integer, decimal, timestamp, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, numeric, timestamp, integer, decimal, primaryKey } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Table User
@@ -24,15 +25,15 @@ export const accounts = pgTable('accounts', {
 });
 
 // Table HistoryTransact
-export const historyTransacts = pgTable('historyTransacts', {
+export const historyTransacts = pgTable('history_transacts', {
     id: serial('id').primaryKey(),
-    accountId: integer('accountId').notNull().references(() => accounts.id),
-    transactionType: varchar('transactionType', { length: 255 }).notNull(),
-    amount: decimal('amount', { precision: 15, scale: 3 }).notNull(),
-    date: timestamp('date').notNull().defaultNow(),
+    account_id: integer('account_id').notNull(),
+    transaction_type: varchar('transaction_type', { length: 10 }).notNull(),
+    amount: numeric('amount').notNull(),
     description: varchar('description', { length: 255 }),
-    createdAt: timestamp('createdAt').notNull().defaultNow(),
+    date: timestamp('date').defaultNow().notNull(),
 });
+
 
 // Table Budget
 export const budgets = pgTable('budgets', {
@@ -87,7 +88,7 @@ export const accountRelations = relations(accounts, ({ one, many }) => ({
 }));
 
 export const historyTransactRelations = relations(historyTransacts, ({ one }) => ({
-    account: one(accounts, { fields: [historyTransacts.accountId], references: [accounts.id] }),
+    account: one(accounts, { fields: [historyTransacts.account_id], references: [accounts.id] }),
 }));
 
 export const budgetRelations = relations(budgets, ({ one, many }) => ({
