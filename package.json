@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@libsql/client": "^0.15.6",
     "@nuxt/ui": "^3.1.1",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@prisma/adapter-pg": "^6.7.0",
@@ -18,11 +19,14 @@
     "@prisma/nuxt": "^0.3.0",
     "@tailwindcss/postcss": "^4.1.6",
     "@tailwindcss/vite": "^4.1.6",
+    "@types/bcrypt": "^5.0.2",
     "autoprefixer": "^10.4.21",
+    "bcrypt": "^6.0.0",
     "drizzle-orm": "^0.43.1",
     "pg": "^8.16.0",
     "postcss": "^8.5.3",
     "prisma": "^6.7.0",
+    "unstorage": "^1.16.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.1",
     "zod": "^3.24.4"
