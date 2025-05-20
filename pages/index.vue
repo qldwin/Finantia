@@ -46,14 +46,15 @@
     </div>
     
     <div class="text-center">
-      <button class="btn btn-primary">Commencer maintenant</button>
-      <button class="btn btn-outline ml-3">En savoir plus</button>
+      <button @click="navigateTo('/register')" class="btn btn-primary">Commencer maintenant</button>
+      <button @click="navigateTo('/about')" class="btn btn-outline ml-3">En savoir plus</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { navigateTo } from '#app';
 
 const balance = ref(0);
 const items = ref([

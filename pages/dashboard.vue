@@ -46,7 +46,10 @@
       
       <!-- Actions rapides -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <button @click="openTransactionModal" class="card hover:shadow-md transition-shadow flex flex-col items-center justify-center p-4 text-center">
+        <button 
+          @click="showTransactionModal = true" 
+          class="card hover:shadow-md transition-shadow flex flex-col items-center justify-center p-4 text-center"
+        >
           <div class="rounded-full bg-primary-100 dark:bg-primary-900/30 p-3 mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -97,7 +100,6 @@
         
         <div v-else-if="transactions.length === 0" class="py-8 text-center text-neutral-500">
           <p>Aucune transaction récente</p>
-          <button @click="openTransactionModal" class="mt-2 text-primary-600 dark:text-primary-400 hover:underline">Ajouter une transaction</button>
         </div>
         
         <div v-else class="overflow-x-auto">
@@ -123,12 +125,20 @@
                   {{ transaction.type === 'income' ? '+' : '-' }} {{ formatCurrency(transaction.amount) }}
                 </td>
                 <td class="py-3 px-2 text-right">
-                  <button @click="editTransaction(transaction)" class="text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400">
-                    <span class="sr-only">Modifier</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
+                  <div class="flex justify-end space-x-2">
+                    <button @click="editTransaction(transaction)" class="text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400">
+                      <span class="sr-only">Modifier</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button @click="confirmDeleteTransaction(transaction)" class="text-neutral-500 hover:text-red-600 dark:hover:text-red-400">
+                      <span class="sr-only">Supprimer</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -203,9 +213,9 @@ const monthlyExpense = computed(() => {
 });
 
 // Pourcentages de variation (simulés)
-const balanceChange = ref(3.2);
-const incomeChange = ref(5.1);
-const expenseChange = ref(-1.8);
+const balanceChange = ref(0);
+const incomeChange = ref(0);
+const expenseChange = ref(0);
 
 // Charger les transactions de l'utilisateur
 const loadTransactions = async () => {
@@ -223,6 +233,7 @@ const loadTransactions = async () => {
 
 // Ouvrir le modal de nouvelle transaction
 const openTransactionModal = () => {
+  console.log('Ouverture du modal de transaction');
   selectedTransaction.value = null;
   showTransactionModal.value = true;
 };
@@ -231,6 +242,30 @@ const openTransactionModal = () => {
 const editTransaction = (transaction) => {
   selectedTransaction.value = transaction;
   showTransactionModal.value = true;
+};
+
+// Confirmer la suppression d'une transaction
+const confirmDeleteTransaction = (transaction) => {
+  if (confirm(`Êtes-vous sûr de vouloir supprimer la transaction "${transaction.description}" ?`)) {
+    deleteTransaction(transaction.id);
+  }
+};
+
+// Supprimer une transaction
+const deleteTransaction = async (id) => {
+  try {
+    await $fetch(`/api/transactions/${id}`, {
+      method: 'DELETE'
+    });
+    
+    // Supprimer la transaction de la liste
+    transactions.value = transactions.value.filter(t => t.id !== id);
+    
+    toast.success('Transaction supprimée avec succès');
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la transaction:', error);
+    toast.error('Erreur lors de la suppression');
+  }
 };
 
 // Ouvrir le modal de nouveau budget (à implémenter)

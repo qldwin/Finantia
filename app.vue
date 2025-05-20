@@ -10,8 +10,14 @@
 
 <script setup>
 import { onMounted } from 'vue'
+import { useAuth } from '~/composables/useAuth';
 
-onMounted(() => {
+const auth = useAuth();
+
+onMounted(async () => {
+  // Vérifier l'authentification au chargement de l'application
+  await auth.checkAuth();
+
   // Vérifie d'abord les préférences sauvegardées dans localStorage
   const savedTheme = localStorage.getItem('theme')
   const html = document.documentElement
