@@ -18,15 +18,14 @@
             Accueil
           </NuxtLink>
 
-          <template v-if="isAuthenticated">
-            <NuxtLink
-                to="/dashboard"
-                class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                active-class="text-primary-600 dark:text-primary-400 font-medium"
-            >
-              Tableau de bord
-            </NuxtLink>
-          </template>
+          <NuxtLink
+              to="/dashboard"
+              class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              active-class="text-primary-600 dark:text-primary-400 font-medium"
+          >
+            Tableau de bord
+          </NuxtLink>
+
 
           <NuxtLink
               to="/about"
@@ -39,62 +38,58 @@
 
         <div class="flex items-center space-x-3">
           <!-- Boutons d'authentification -->
-          <template v-if="isAuthenticated">
-            <div class="relative">
+          <div class="relative">
+            <button
+                @click="toggleDropdown"
+                class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              <span class="text-sm text-neutral-700 dark:text-neutral-300">{{ user?.name || 'Utilisateur' }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   class="h-5 w-5 text-neutral-700 dark:text-neutral-300 transition-transform"
+                   :class="{ 'rotate-180': isDropdownOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+
+            <div
+                v-if="isDropdownOpen"
+                class="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-md overflow-hidden shadow-lg border border-neutral-200 dark:border-neutral-800"
+            >
+              <NuxtLink
+                  to="/profile"
+                  class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  @click="isDropdownOpen = false"
+              >
+                Mon profil
+              </NuxtLink>
+              <NuxtLink
+                  to="/dashboard"
+                  class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  @click="isDropdownOpen = false"
+              >
+                Tableau de bord
+              </NuxtLink>
               <button
-                  @click="toggleDropdown"
-                  class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  @click="logout"
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               >
-                <span class="text-sm text-neutral-700 dark:text-neutral-300">{{ user?.name || 'Utilisateur' }}</span>
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-5 w-5 text-neutral-700 dark:text-neutral-300 transition-transform"
-                     :class="{ 'rotate-180': isDropdownOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
+                Déconnexion
               </button>
-
-              <div
-                  v-if="isDropdownOpen"
-                  class="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-md overflow-hidden shadow-lg border border-neutral-200 dark:border-neutral-800"
-              >
-                <NuxtLink
-                    to="/profile"
-                    class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                    @click="isDropdownOpen = false"
-                >
-                  Mon profil
-                </NuxtLink>
-                <NuxtLink
-                    to="/dashboard"
-                    class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                    @click="isDropdownOpen = false"
-                >
-                  Tableau de bord
-                </NuxtLink>
-                <button
-                    @click="logout"
-                    class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  Déconnexion
-                </button>
-              </div>
             </div>
-          </template>
+          </div>
 
-          <template v-else>
-            <NuxtLink
-                to="/register"
-                class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-            >
-              Créer un compte
-            </NuxtLink>
-            <NuxtLink
-                to="/login"
-                class="px-3 py-2 text-sm rounded-md bg-primary-500 text-white hover:bg-primary-600 transition-colors"
-            >
-              Se connecter
-            </NuxtLink>
-          </template>
+          <NuxtLink
+              to="/register"
+              class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          >
+            Créer un compte
+          </NuxtLink>
+          <NuxtLink
+              to="/login"
+              class="px-3 py-2 text-sm rounded-md bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+          >
+            Se connecter
+          </NuxtLink>
 
           <!-- Theme switcher -->
           <button
@@ -143,25 +138,23 @@
           Accueil
         </NuxtLink>
 
-        <template v-if="isAuthenticated">
-          <NuxtLink
-              to="/dashboard"
-              class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
-              @click="isMobileMenuOpen = false"
-          >
-            Tableau de bord
-          </NuxtLink>
+        <NuxtLink
+            to="/dashboard"
+            class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
+            @click="isMobileMenuOpen = false"
+        >
+          Tableau de bord
+        </NuxtLink>
 
-          <NuxtLink
-              to="/profile"
-              class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
-              @click="isMobileMenuOpen = false"
-          >
-            Mon profil
-          </NuxtLink>
-        </template>
+        <NuxtLink
+            to="/profile"
+            class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
+            @click="isMobileMenuOpen = false"
+        >
+          Mon profil
+        </NuxtLink>
 
         <NuxtLink
             to="/about"
@@ -172,34 +165,30 @@
           À propos
         </NuxtLink>
 
-        <template v-if="isAuthenticated">
-          <button
-              @click="logout"
-              class="w-full text-left block px-3 py-2 text-base rounded-md text-red-600 dark:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-          >
-            Déconnexion
-          </button>
-        </template>
+        <button
+            @click="logout"
+            class="w-full text-left block px-3 py-2 text-base rounded-md text-red-600 dark:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+        >
+          Déconnexion
+        </button>
 
-        <template v-else>
-          <NuxtLink
-              to="/login"
-              class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
-              @click="isMobileMenuOpen = false"
-          >
-            Se connecter
-          </NuxtLink>
+        <NuxtLink
+            to="/login"
+            class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
+            @click="isMobileMenuOpen = false"
+        >
+          Se connecter
+        </NuxtLink>
 
-          <NuxtLink
-              to="/register"
-              class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
-              @click="isMobileMenuOpen = false"
-          >
-            Créer un compte
-          </NuxtLink>
-        </template>
+        <NuxtLink
+            to="/register"
+            class="block px-3 py-2 text-base rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            active-class="text-primary-600 dark:text-primary-400 font-medium bg-neutral-100 dark:bg-neutral-800"
+            @click="isMobileMenuOpen = false"
+        >
+          Créer un compte
+        </NuxtLink>
       </div>
     </div>
   </header>

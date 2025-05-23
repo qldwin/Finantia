@@ -93,14 +93,6 @@
 </template>
 
 <script setup>
-import {useAuth} from '~/composables/useAuth';
-import {navigateTo} from '#app';
-
-definePageMeta({
-  middleware: ['auth']
-});
-
-const auth = useAuth();
 const toast = useToast();
 
 // État pour les transactions

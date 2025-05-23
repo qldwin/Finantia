@@ -114,16 +114,6 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useAuth } from '~/composables/useAuth';
-import { navigateTo } from '#app';
-
-definePageMeta({
-  middleware: ['auth']
-});
-
-const auth = useAuth();
-const { user, isLoading } = auth;
 const toast = useToast();
 
 const form = ref({
@@ -156,8 +146,6 @@ const formValid = computed(() => {
 // Charger les données de l'utilisateur
 const loadUserData = async () => {
   try {
-    await auth.checkAuth();
-    
     if (user.value) {
       form.value.name = user.value.name || '';
       form.value.email = user.value.email || '';
@@ -180,16 +168,6 @@ const updateProfile = async () => {
     // Simuler une mise à jour de profil
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // En réalité, vous feriez un appel API comme:
-    // await $fetch('/api/auth/update-profile', {
-    //   method: 'PUT',
-    //   body: {
-    //     name: form.value.name,
-    //     currentPassword: form.value.currentPassword,
-    //     newPassword: form.value.newPassword
-    //   }
-    // });
-    
     success.value = "Profil mis à jour avec succès !";
     
     // Réinitialiser les champs de mot de passe
@@ -198,7 +176,6 @@ const updateProfile = async () => {
     form.value.confirmPassword = '';
     
     // Recharger les données utilisateur
-    await auth.checkAuth();
   } catch (err) {
     error.value = err.statusMessage || "Erreur lors de la mise à jour du profil";
     console.error(err);
@@ -225,8 +202,7 @@ const deleteAccount = async () => {
     
     // Déconnecter l'utilisateur et rediriger vers la page d'accueil
     await navigateTo('/');
-    await auth.logout();
-    
+
     // Afficher un message de confirmation
     toast.success('Votre compte a été supprimé avec succès');
   } catch (err) {

@@ -1,22 +1,15 @@
 import {eq} from 'drizzle-orm';
 import {db} from "~/server/db";
 import {users} from "~/drizzle/schema";
-import {loginSchema} from '~/server/schemas/loginSchema';
+import {z} from "zod";
+
+const loginSchema = z.object({
+    email: z.string().email('Email invalide'),
+    password: z.string().min(8, 'Le mot de passe est requis'),
+})
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
-
-    // Validation des données
-    const validation = loginSchema.safeParse(body);
-    if (!validation.success) {
-        return createError({
-            statusCode: 400,
-            statusMessage: 'Invalid input data',
-            data: validation.error.issues,
-        });
-    }
-
-    const {email, password} = validation.data;
+    const {email, password} = await readValidatedBody(event, loginSchema.parse);
 
     // Rechercher l'utilisateur par email
     try {
@@ -27,17 +20,20 @@ export default defineEventHandler(async (event) => {
                 message: 'Identifiants incorrects'
             });
         }
-        const isPasswordValid = await verifyPassword(password, user[0].password);
+        const isPasswordValid = await verifyPassword(user[0].password, password);
 
         if (!isPasswordValid) {
             return createError({
                 statusCode: 401,
                 statusMessage: 'Invalid email or password',
             });
+        } else {
+            await setUserSession(event, {
+                user: user[0]
+            })
         }
 
-        const token = generateToken(user[0]);
-        return {token};
+        return {};
     } catch (error) {
         console.error(error);
         return createError({
