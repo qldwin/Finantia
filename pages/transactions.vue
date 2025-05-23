@@ -93,7 +93,10 @@
 </template>
 
 <script setup>
-const toast = useToast();
+definePageMeta({
+  middleware: ['authenticated']
+});
+// const toast = useToast();
 
 // État pour les transactions
 const transactions = ref([]);
@@ -109,7 +112,7 @@ const loadTransactions = async () => {
     transactions.value = response.transactions || [];
   } catch (error) {
     console.error('Erreur lors du chargement des transactions:', error);
-    toast.error('Erreur lors du chargement des transactions');
+    // toast.error('Erreur lors du chargement des transactions');
   } finally {
     loading.value = false;
   }
@@ -141,10 +144,10 @@ const deleteTransaction = async (id) => {
       method: 'DELETE'
     });
     transactions.value = transactions.value.filter(t => t.id !== id);
-    toast.success('Transaction supprimée avec succès');
+    // toast.success('Transaction supprimée avec succès');
   } catch (error) {
     console.error('Erreur lors de la suppression de la transaction:', error);
-    toast.error('Erreur lors de la suppression de la transaction');
+    // toast.error('Erreur lors de la suppression de la transaction');
   }
 };
 
@@ -181,7 +184,6 @@ const formatDate = (dateString) => {
 
 // Vérifier l'authentification et charger les données au chargement de la page
 onMounted(async () => {
-  await auth.checkAuth();
   await loadTransactions();
 });
 </script> 

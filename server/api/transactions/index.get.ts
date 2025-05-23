@@ -1,34 +1,35 @@
 import {eq, desc} from 'drizzle-orm';
-import {useSession} from 'h3';
-import {SESSION_CONFIG} from '../../middleware/session';
 import {db} from '../../db';
 import {transactions} from "~/drizzle/schema";
 
 export default defineEventHandler(async (event) => {
     try {
-        // Récupérer la session
-        const session = await useSession(event, SESSION_CONFIG);
+        const { user } = await requireUserSession(event)
 
         // Vérifier si l'utilisateur est connecté
-        if (!session.data.loggedIn || !session.data.user || !session.data.user.id) {
+        if (!user) {
             return createError({
                 statusCode: 401,
                 statusMessage: 'Non authentifié'
             });
         }
+        if (!user["id"]) {
+            return createError({
+                statusCode: 401,
+                statusMessage: 'Session invalide - ID utilisateur manquant'
+            });
+        }else {
+            // Récupérer les transactions de l'utilisateur
+            const userTransactions = await db.select()
+                .from(transactions)
+                .where(eq(transactions.userId, user["id"]))
+                .orderBy(desc(transactions.date));
 
-        const userId = session.data.user.id;
+            return {
+                transactions: userTransactions
+            };
+        }
 
-        // Récupérer les transactions de l'utilisateur
-        const userTransactions = await db.select()
-            .from(transactions)
-            .where(eq(transactions.userId, userId))
-            .orderBy(desc(transactions.date))
-            .all();
-
-        return {
-            transactions: userTransactions
-        };
     } catch (error) {
         console.error('Erreur lors de la récupération des transactions:', error);
         return createError({

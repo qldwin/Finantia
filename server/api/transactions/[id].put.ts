@@ -6,18 +6,17 @@ import {db} from "~/server/db";
 
 export default defineEventHandler(async (event) => {
     try {
-        // Récupérer la session
-        const session = await useSession(event, SESSION_CONFIG);
+        const {user} = await requireUserSession(event)
 
         // Vérifier si l'utilisateur est connecté
-        if (!session.data.loggedIn || !session.data.user || !session.data.user.id) {
+        if (!user) {
             return createError({
                 statusCode: 401,
                 statusMessage: 'Non authentifié'
             });
         }
 
-        const userId = session.data.user.id;
+        const userId = user["id"];
 
         // Vérifier si l'ID de transaction est fourni
         if (!event.context.params?.id) {
@@ -68,7 +67,7 @@ export default defineEventHandler(async (event) => {
                 amount: body.amount,
                 type: body.type,
                 category: body.category,
-                date: body.date
+                // date: body.date
             })
             .where(and(
                 eq(transactions.id, transactionId),

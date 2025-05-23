@@ -3,14 +3,6 @@
     <div class="max-w-6xl mx-auto">
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-50">Tableau de bord</h1>
-
-        <div class="flex items-center space-x-3">
-          <span class="text-neutral-600 dark:text-neutral-400">Bonjour, {{ user?.name || 'Utilisateur' }}</span>
-          <button @click="logout" class="btn btn-outline text-sm px-3 py-1">
-            <span v-if="isLoading">...</span>
-            <span v-else>Déconnexion</span>
-          </button>
-        </div>
       </div>
 
       <!-- Résumé financier -->
@@ -183,10 +175,9 @@
 
 <script setup>
 definePageMeta({
-  middleware: ['auth']
+  middleware: ['authenticated']
 });
-
-const toast = useToast();
+// const toast = useToast();
 
 // État pour les transactions
 const transactions = ref([]);
@@ -247,7 +238,7 @@ const loadTransactions = async () => {
     transactions.value = response.transactions || [];
   } catch (error) {
     console.error('Erreur lors du chargement des transactions:', error);
-    toast.error('Erreur lors du chargement des transactions');
+    // toast.error('Erreur lors du chargement des transactions');
   } finally {
     loading.value = false;
   }
@@ -283,16 +274,16 @@ const deleteTransaction = async (id) => {
     // Supprimer la transaction de la liste
     transactions.value = transactions.value.filter(t => t.id !== id);
 
-    toast.success('Transaction supprimée avec succès');
+    // toast.success('Transaction supprimée avec succès');
   } catch (error) {
     console.error('Erreur lors de la suppression de la transaction:', error);
-    toast.error('Erreur lors de la suppression');
+    // toast.error('Erreur lors de la suppression');
   }
 };
 
 // Ouvrir le modal de nouveau budget (à implémenter)
 const openBudgetModal = () => {
-  toast.info('Fonctionnalité de budget en développement');
+  // toast.info('Fonctionnalité de budget en développement');
 };
 
 // Événement après ajout d'une transaction
@@ -324,17 +315,6 @@ const formatDate = (dateString) => {
     month: '2-digit',
     year: 'numeric'
   }).format(date);
-};
-
-// Fonction de déconnexion
-const logout = async () => {
-  try {
-    // await auth.logout();
-    navigateTo('/login');
-  } catch (error) {
-    console.error('Erreur lors de la déconnexion:', error);
-    toast.error('Erreur lors de la déconnexion');
-  }
 };
 
 // Vérifier l'authentification et charger les données au chargement de la page

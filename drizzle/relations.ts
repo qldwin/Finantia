@@ -5,13 +5,15 @@ import {
     budgetCategories,
     budgets,
     categories,
-    historyTransacts,
+    historyTransacts, transactions,
     users
 } from "~/drizzle/schema";
 
 export const userRelations = relations(users, ({many}) => ({
     accounts: many(accounts),
     budgets: many(budgets),
+    transactions: many(transactions),
+
 }));
 
 export const accountRelations = relations(accounts, ({one, many}) => ({
