@@ -29,7 +29,11 @@ export default defineEventHandler(async (event) => {
             });
         } else {
             await setUserSession(event, {
-                user: user[0]
+                user: {
+                    id: user[0].id,
+                    email: user[0].email,
+                    name: user[0].name,
+                }
             })
         }
 
