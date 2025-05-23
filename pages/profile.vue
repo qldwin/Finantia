@@ -116,7 +116,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAuth } from '~/composables/useAuth';
-import { useToast } from '@/composables/useToast';
 import { navigateTo } from '#app';
 
 definePageMeta({

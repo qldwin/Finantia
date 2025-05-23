@@ -111,7 +111,6 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { useToast } from '@/composables/useToast';
 import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '@/server/utils/models';
 
 const props = defineProps({

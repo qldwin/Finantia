@@ -1,7 +1,8 @@
-import { db, transactions } from '@/server/utils/database';
 import { useSession } from 'h3';
 import { SESSION_CONFIG } from '../../middleware/session';
 import { z } from 'zod';
+import {transactions} from "~/drizzle/schema";
+import {db} from "~/server/db";
 
 const transactionSchema = z.object({
   description: z.string().min(1, 'Description requise'),
@@ -50,7 +51,7 @@ export default defineEventHandler(async (event) => {
       category: category || null,
       date: date || new Date().toISOString(),
       createdAt: new Date().toISOString()
-    }).returning().get();
+    }).returning();
     
     return {
       transaction,
