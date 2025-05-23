@@ -110,9 +110,28 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useToast } from '@/composables/useToast';
-import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '@/server/utils/models';
+// Catégories prédéfinies
+const EXPENSE_CATEGORIES = [
+  'Alimentation',
+  'Logement',
+  'Transport',
+  'Loisirs',
+  'Santé',
+  'Éducation',
+  'Shopping',
+  'Factures',
+  'Autres'
+];
+
+const INCOME_CATEGORIES = [
+  'Salaire',
+  'Freelance',
+  'Dividendes',
+  'Cadeaux',
+  'Remboursements',
+  'Ventes',
+  'Autres'
+];
 
 const props = defineProps({
   modelValue: Boolean,
@@ -198,7 +217,7 @@ const submitForm = async () => {
         body: payload
       });
       emits('transaction-updated', response.transaction);
-      toast.success('Transaction modifiée avec succès');
+      // toast.success('Transaction modifiée avec succès');
     } else {
       // Créer une nouvelle transaction
       response = await $fetch('/api/transactions/create', {
@@ -206,13 +225,13 @@ const submitForm = async () => {
         body: payload
       });
       emits('transaction-added', response.transaction);
-      toast.success('Transaction ajoutée avec succès');
+      // toast.success('Transaction ajoutée avec succès');
     }
     
     closeModal();
   } catch (error) {
     console.error('Erreur:', error);
-    toast.error(error.data?.statusMessage || 'Erreur lors de l\'enregistrement de la transaction');
+    // toast.error(error.data?.statusMessage || 'Erreur lors de l\'enregistrement de la transaction');
   } finally {
     isLoading.value = false;
   }

@@ -137,16 +137,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue';
-import { navigateTo } from '#app';
-import { INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '@/server/utils/models';
-import { Chart, registerables } from 'chart.js';
-
 // Enregistrer tous les composants Chart.js
+import {Chart, registerables} from "chart.js";
+
 Chart.register(...registerables);
 
 definePageMeta({
-  middleware: ['auth']
+  middleware: ['authenticated']
 });
 
 // État

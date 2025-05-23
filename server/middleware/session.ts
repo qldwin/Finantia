@@ -1,4 +1,4 @@
-import { defineEventHandler, useSession, createError, H3Event } from 'h3';
+import { defineEventHandler, useSession } from 'h3';
 
 // Configuration de session commune pour toute l'application
 export const SESSION_CONFIG = {
@@ -23,7 +23,7 @@ interface SessionData {
 }
 
 // Créer une session minimale pour utiliser en cas d'erreur
-function createMinimalSession(event: H3Event) {
+function createMinimalSession() {
   const sessionId = crypto.randomUUID?.() || Math.random().toString(36).substring(2);
   
   return {
@@ -69,7 +69,7 @@ export default defineEventHandler(async (event) => {
     } catch (error) {
       console.warn('Erreur lors de la récupération de session, création d\'une session minimale:', error);
       // Créer une session minimale en cas d'échec
-      session = createMinimalSession(event);
+      session = createMinimalSession();
     }
     
     // Rendre la session disponible dans le contexte de l'événement
@@ -79,6 +79,6 @@ export default defineEventHandler(async (event) => {
     console.error('Erreur critique d\'initialisation de session:', error);
     
     // Créer un objet session minimal même en cas d'erreur critique
-    event.context.session = createMinimalSession(event);
+    event.context.session = createMinimalSession();
   }
 }); 
