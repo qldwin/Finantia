@@ -21,7 +21,7 @@
     "chart.js": "^4.4.9",
     "drizzle-orm": "^0.43.1",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.0",
+    "pg": "^8.16.3",
     "postcss": "^8.5.3",
     "unstorage": "^1.16.0",
     "vue": "^3.5.13",

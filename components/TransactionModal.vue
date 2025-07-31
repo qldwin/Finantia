@@ -199,7 +199,7 @@ const closeModal = () => {
 const submitForm = async () => {
   try {
     isLoading.value = true;
-    
+
     const payload = {
       description: form.value.description,
       amount: Number(form.value.amount),
@@ -207,9 +207,9 @@ const submitForm = async () => {
       category: form.value.category || undefined,
       date: new Date(form.value.date).toISOString()
     };
-    
+
     let response;
-    
+
     if (isEditing.value) {
       // Mettre à jour une transaction existante
       response = await $fetch(`/api/transactions/${props.transaction.id}`, {
@@ -227,7 +227,7 @@ const submitForm = async () => {
       emits('transaction-added', response.transaction);
       // toast.success('Transaction ajoutée avec succès');
     }
-    
+
     closeModal();
   } catch (error) {
     console.error('Erreur:', error);

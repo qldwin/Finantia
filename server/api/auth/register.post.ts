@@ -48,10 +48,19 @@ export default defineEventHandler(async (event) => {
             message: 'Inscription réussie'
         };
     } catch (error) {
-        console.error('Erreur d\'inscription:', error);
+        console.error("Erreur d'inscription brute:", error);
+
+        // Si c'est un AggregateError, on affiche toutes ses causes internes
+        if (error instanceof AggregateError) {
+            console.error('Causes internes de AggregateError:');
+            for (const e of error.errors) {
+                console.error(e.message, e.stack);
+            }
+        }
+
         return createError({
             statusCode: 500,
-            message: 'Erreur serveur lors de l\'inscription'
+            message: "Erreur serveur lors de l'inscription",
         });
     }
 }); 

@@ -1,7 +1,6 @@
 import {z} from 'zod';
 import {transactions} from "~/drizzle/schema";
 import {db} from "~/server/db";
-import {desc, eq} from "drizzle-orm";
 
 const transactionSchema = z.object({
     description: z.string().min(1, 'Description requise'),
@@ -24,6 +23,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // Récupérer les données du body
+
         const body = await readBody(event);
 
         // Valider les données
@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
                 data: result.error.format()
             });
         }
+
 
         const {description, amount, type, category, date} = result.data;
 
@@ -59,6 +60,7 @@ export default defineEventHandler(async (event) => {
             };
         }
 
+
     } catch (error) {
         console.error('Erreur lors de la création de la transaction:', error);
         return createError({
@@ -66,4 +68,5 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Erreur serveur'
         });
     }
+
 });
