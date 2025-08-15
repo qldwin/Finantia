@@ -153,7 +153,11 @@ const deleteTransaction = async (id) => {
 
 // Événement après ajout d'une transaction
 const onTransactionAdded = (transaction) => {
+  console.log('Transaction reçue dans le parent :', transaction);
+  transaction.amount = Number(transaction.amount);
+  transaction.date = new Date(transaction.date).toISOString();
   transactions.value = [transaction, ...transactions.value];
+  showTransactionModal.value = false;
 };
 
 // Événement après mise à jour d'une transaction

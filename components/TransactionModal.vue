@@ -224,6 +224,8 @@ const submitForm = async () => {
         method: 'POST',
         body: payload
       });
+      console.log('Réponse API création transaction :', response);
+
       emits('transaction-added', response.transaction);
       // toast.success('Transaction ajoutée avec succès');
     }

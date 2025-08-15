@@ -177,9 +177,7 @@
 definePageMeta({
   middleware: ['authenticated']
 });
-// const toast = useToast();
 
-// État pour les transactions
 const transactions = ref([]);
 const loading = ref(true);
 const showTransactionModal = ref(false);
@@ -187,14 +185,13 @@ const selectedTransaction = ref(null);
 
 // Statistiques financières
 const balance = computed(() => {
-  if (!transactions.value.length) return 0;
   return transactions.value.reduce((total, t) => {
-    return total + (t.type === 'income' ? t.amount : -t.amount);
+    const amount = Number(t.amount) || 0;
+    return total + (t.type === 'income' ? amount : -amount);
   }, 0);
 });
 
 const monthlyIncome = computed(() => {
-  if (!transactions.value.length) return 0;
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
@@ -206,11 +203,10 @@ const monthlyIncome = computed(() => {
             transactionDate.getMonth() === currentMonth &&
             transactionDate.getFullYear() === currentYear;
       })
-      .reduce((total, t) => total + t.amount, 0);
+      .reduce((total, t) => total + Number(t.amount), 0);
 });
 
 const monthlyExpense = computed(() => {
-  if (!transactions.value.length) return 0;
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
@@ -222,7 +218,7 @@ const monthlyExpense = computed(() => {
             transactionDate.getMonth() === currentMonth &&
             transactionDate.getFullYear() === currentYear;
       })
-      .reduce((total, t) => total + t.amount, 0);
+      .reduce((total, t) => total + Number(t.amount), 0);
 });
 
 // Pourcentages de variation (simulés)
@@ -238,7 +234,6 @@ const loadTransactions = async () => {
     transactions.value = response.transactions || [];
   } catch (error) {
     console.error('Erreur lors du chargement des transactions:', error);
-    // toast.error('Erreur lors du chargement des transactions');
   } finally {
     loading.value = false;
   }
@@ -246,70 +241,75 @@ const loadTransactions = async () => {
 
 // Ouvrir le modal de nouvelle transaction
 const openTransactionModal = () => {
-  console.log('Ouverture du modal de transaction');
   selectedTransaction.value = null;
   showTransactionModal.value = true;
 };
 
 // Ouvrir le modal d'édition de transaction
 const editTransaction = (transaction) => {
-  selectedTransaction.value = transaction;
+  selectedTransaction.value = { ...transaction }; // créer une copie pour éviter les mutations directes
   showTransactionModal.value = true;
 };
 
-// Confirmer la suppression d'une transaction
+// Supprimer une transaction
 const confirmDeleteTransaction = (transaction) => {
   if (confirm(`Êtes-vous sûr de vouloir supprimer la transaction "${transaction.description}" ?`)) {
     deleteTransaction(transaction.id);
   }
 };
 
-// Supprimer une transaction
 const deleteTransaction = async (id) => {
   try {
-    await $fetch(`/api/transactions/${id}`, {
-      method: 'DELETE'
-    });
-
-    // Supprimer la transaction de la liste
+    await $fetch(`/api/transactions/${id}`, { method: 'DELETE' });
     transactions.value = transactions.value.filter(t => t.id !== id);
-
-    // toast.success('Transaction supprimée avec succès');
   } catch (error) {
     console.error('Erreur lors de la suppression de la transaction:', error);
-    // toast.error('Erreur lors de la suppression');
   }
 };
 
-// Ouvrir le modal de nouveau budget (à implémenter)
-const openBudgetModal = () => {
-  // toast.info('Fonctionnalité de budget en développement');
-};
-
 // Événement après ajout d'une transaction
-const onTransactionAdded = (transaction) => {
-  transactions.value = [transaction, ...transactions.value];
+const onTransactionAdded = (transactionResponse) => {
+  const transaction = transactionResponse.transaction[0];
+
+  const t = {
+    id: transaction.id || Date.now(),
+    date: transaction.date || new Date().toISOString(),
+    amount: Number(transaction.amount) || 0,
+    description: transaction.description || '',
+    type: transaction.type || 'income', // corrige le type par défaut
+  };
+
+  transactions.value = [t, ...transactions.value];
+
+  // Vider et fermer le modal après ajout
+  selectedTransaction.value = null;
+  showTransactionModal.value = false;
 };
 
 // Événement après mise à jour d'une transaction
 const onTransactionUpdated = (updatedTransaction) => {
   const index = transactions.value.findIndex(t => t.id === updatedTransaction.id);
   if (index !== -1) {
-    transactions.value[index] = updatedTransaction;
+    transactions.value[index] = { ...updatedTransaction }; // recréer l'objet pour déclencher la réactivité
   }
+  selectedTransaction.value = null;
+  showTransactionModal.value = false;
 };
 
 // Formatter les montants en euros
 const formatCurrency = (amount) => {
+  const value = Number(amount);
+  if (isNaN(value)) return '0 €';
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR'
-  }).format(amount);
+  }).format(value);
 };
 
 // Formatter les dates
 const formatDate = (dateString) => {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '-';
   return new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
     month: '2-digit',
@@ -317,9 +317,7 @@ const formatDate = (dateString) => {
   }).format(date);
 };
 
-// Vérifier l'authentification et charger les données au chargement de la page
 onMounted(async () => {
-  // await auth.checkAuth();
   await loadTransactions();
 });
-</script> 
+</script>
