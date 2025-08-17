@@ -220,19 +220,18 @@ const filteredTransactions = computed(() => {
 // Calculs financiers
 const totalIncome = computed(() => {
   return filteredTransactions.value
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
 });
 
 const totalExpenses = computed(() => {
   return filteredTransactions.value
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
 });
 
-const netBalance = computed(() => {
-  return totalIncome.value - totalExpenses.value;
-});
+const netBalance = computed(() => totalIncome.value - totalExpenses.value);
+
 
 // Données pour le graphique revenus vs dépenses
 const getIncomeVsExpensesData = () => {
