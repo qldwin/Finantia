@@ -141,7 +141,8 @@ const props = defineProps({
   }
 });
 
-const emits = defineEmits(['update:modelValue', 'transaction-added', 'transaction-updated']);
+//const emits = defineEmits(['update:modelValue', 'transaction-added', 'transaction-updated']);
+const emits = defineEmits(['update:modelValue', 'add', 'update']);
 
 const toast = useToast();
 const isLoading = ref(false);
@@ -199,13 +200,14 @@ const closeModal = () => {
 const submitForm = async () => {
   try {
     isLoading.value = true;
-
+    console.log('Date brute envoyée depuis le form:', form.value.date);
     const payload = {
       description: form.value.description,
       amount: Number(form.value.amount),
       type: form.value.type,
       category: form.value.category || undefined,
-      date: new Date(form.value.date).toISOString()
+      //date: new Date(form.value.date).toISOString()
+      date: form.value.date ? new Date(form.value.date).toISOString() : new Date().toISOString()
     };
 
     let response;
@@ -216,7 +218,8 @@ const submitForm = async () => {
         method: 'PUT',
         body: payload
       });
-      emits('transaction-updated', response.transaction);
+      //emits('transaction-updated', response.transaction);
+      emits('update', response.transaction);
       // toast.success('Transaction modifiée avec succès');
     } else {
       // Créer une nouvelle transaction
@@ -227,6 +230,7 @@ const submitForm = async () => {
       console.log('Réponse API création transaction :', response);
 
       emits('transaction-added', response.transaction);
+      console.log('Émission depuis le modal :', response.transaction);
       // toast.success('Transaction ajoutée avec succès');
     }
 

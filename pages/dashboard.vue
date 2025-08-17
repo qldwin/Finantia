@@ -123,9 +123,7 @@
             <tbody>
             <tr v-for="transaction in transactions.slice(0, 5)" :key="transaction.id"
                 class="border-b border-neutral-200 dark:border-neutral-800">
-              <td class="py-3 px-2 text-sm text-neutral-600 dark:text-neutral-400">{{
-                  formatDate(transaction.date)
-                }}
+              <td class="py-3 px-2 text-sm text-neutral-600 dark:text-neutral-400">{{ formatDate(transaction.date) }}
               </td>
               <td class="py-3 px-2 text-sm text-neutral-800 dark:text-neutral-200">
                 {{ transaction.description }}
@@ -168,8 +166,11 @@
     </div>
 
     <!-- Modals -->
-    <TransactionModal v-model="showTransactionModal" :transaction="selectedTransaction"
-                      @transaction-added="onTransactionAdded" @transaction-updated="onTransactionUpdated"/>
+    <TransactionModal
+        v-model="showTransactionModal"
+        @transaction-added="onTransactionAdded"
+        @transaction-updated="onTransactionUpdated"
+    />
   </div>
 </template>
 
@@ -268,21 +269,17 @@ const deleteTransaction = async (id) => {
 };
 
 // Événement après ajout d'une transaction
-const onTransactionAdded = (transactionResponse) => {
-  const transaction = transactionResponse.transaction[0];
+const onTransactionAdded = (transactionArray) => {
+  // transactionArray est un tableau contenant un objet
+  const transaction = transactionArray[0];
 
-  const t = {
-    id: transaction.id || Date.now(),
-    date: transaction.date || new Date().toISOString(),
-    amount: Number(transaction.amount) || 0,
-    description: transaction.description || '',
-    type: transaction.type || 'income', // corrige le type par défaut
-  };
+  console.log('Transaction extraite :', transaction);
 
-  transactions.value = [t, ...transactions.value];
+  // sécuriser les champs
+  transaction.amount = Number(transaction.amount) || 0;
+  transaction.date = transaction.date ? new Date(transaction.date).toISOString() : null;
 
-  // Vider et fermer le modal après ajout
-  selectedTransaction.value = null;
+  transactions.value = [transaction, ...transactions.value];
   showTransactionModal.value = false;
 };
 
