@@ -141,8 +141,8 @@ const props = defineProps({
   }
 });
 
-//const emits = defineEmits(['update:modelValue', 'transaction-added', 'transaction-updated']);
-const emits = defineEmits(['update:modelValue', 'add', 'update']);
+const emits = defineEmits(['update:modelValue', 'transaction-added', 'transaction-updated']);
+//const emits = defineEmits(['update:modelValue', 'add', 'update']);
 
 const toast = useToast();
 const isLoading = ref(false);
@@ -169,18 +169,24 @@ const availableCategories = computed(() => {
 });
 
 // Réinitialiser le formulaire quand le modal s'ouvre
-watch(() => isOpen.value, (newVal) => {
-  if (newVal && props.transaction) {
-    // Mode édition
-    form.value = {
-      description: props.transaction.description,
-      amount: props.transaction.amount,
-      type: props.transaction.type,
-      category: props.transaction.category || '',
-      date: props.transaction.date.split('T')[0]
-    };
-  } else if (newVal) {
-    // Mode création
+watch(
+    () => props.transaction,
+    (newTransaction) => {
+      if (newTransaction) {
+        form.value = {
+          description: newTransaction.description,
+          amount: newTransaction.amount,
+          type: newTransaction.type,
+          category: newTransaction.category || '',
+          date: newTransaction.date.split('T')[0]
+        };
+      }
+    },
+    { immediate: true }
+);
+
+watch(() => isOpen.value, (open) => {
+  if (open && !props.transaction) {
     form.value = {
       description: '',
       amount: '',
@@ -218,8 +224,7 @@ const submitForm = async () => {
         method: 'PUT',
         body: payload
       });
-      //emits('transaction-updated', response.transaction);
-      emits('update', response.transaction);
+      emits('transaction-updated', response.transaction[0]);
       // toast.success('Transaction modifiée avec succès');
     } else {
       // Créer une nouvelle transaction

@@ -168,6 +168,7 @@
     <!-- Modals -->
     <TransactionModal
         v-model="showTransactionModal"
+        :transaction="selectedTransaction"
         @transaction-added="onTransactionAdded"
         @transaction-updated="onTransactionUpdated"
     />
@@ -192,35 +193,21 @@ const balance = computed(() => {
   }, 0);
 });
 
-const monthlyIncome = computed(() => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
+const currentDate = new Date();
+const currentMonth = currentDate.getMonth();
+const currentYear = currentDate.getFullYear();
 
-  return transactions.value
-      .filter(t => {
-        const transactionDate = new Date(t.date);
-        return t.type === 'income' &&
-            transactionDate.getMonth() === currentMonth &&
-            transactionDate.getFullYear() === currentYear;
-      })
-      .reduce((total, t) => total + Number(t.amount), 0);
-});
+const monthlyIncome = computed(() =>
+    transactions.value
+        .filter(t => t.type === 'income' && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
+        .reduce((sum, t) => sum + Number(t.amount), 0)
+);
 
-const monthlyExpense = computed(() => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  return transactions.value
-      .filter(t => {
-        const transactionDate = new Date(t.date);
-        return t.type === 'expense' &&
-            transactionDate.getMonth() === currentMonth &&
-            transactionDate.getFullYear() === currentYear;
-      })
-      .reduce((total, t) => total + Number(t.amount), 0);
-});
+const monthlyExpense = computed(() =>
+    transactions.value
+        .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
+        .reduce((sum, t) => sum + Number(t.amount), 0)
+);
 
 // Pourcentages de variation (simulés)
 const balanceChange = ref(0);
@@ -248,7 +235,7 @@ const openTransactionModal = () => {
 
 // Ouvrir le modal d'édition de transaction
 const editTransaction = (transaction) => {
-  selectedTransaction.value = { ...transaction }; // créer une copie pour éviter les mutations directes
+  selectedTransaction.value = { ...transaction }; // <-- nouvelle référence
   showTransactionModal.value = true;
 };
 
@@ -270,24 +257,34 @@ const deleteTransaction = async (id) => {
 
 // Événement après ajout d'une transaction
 const onTransactionAdded = (transactionArray) => {
-  // transactionArray est un tableau contenant un objet
   const transaction = transactionArray[0];
 
-  console.log('Transaction extraite :', transaction);
+  // Créer un nouvel objet pour garantir la réactivité
+  const newTransaction = {
+    ...transaction,
+    amount: Number(transaction.amount) || 0,
+    date: transaction.date ? new Date(transaction.date).toISOString() : null
+  };
 
-  // sécuriser les champs
-  transaction.amount = Number(transaction.amount) || 0;
-  transaction.date = transaction.date ? new Date(transaction.date).toISOString() : null;
-
-  transactions.value = [transaction, ...transactions.value];
+  // Préfixer dans le tableau pour que Vue détecte le changement
+  transactions.value = [newTransaction, ...transactions.value];
   showTransactionModal.value = false;
 };
 
 // Événement après mise à jour d'une transaction
 const onTransactionUpdated = (updatedTransaction) => {
-  const index = transactions.value.findIndex(t => t.id === updatedTransaction.id);
+  console.log("Transaction reçue de TransactionModal:", updatedTransaction);
+
+  const index = transactions.value.findIndex(t => String(t.id) === String(updatedTransaction.id));
+  console.log("Index trouvé:", index);
+
   if (index !== -1) {
-    transactions.value[index] = { ...updatedTransaction }; // recréer l'objet pour déclencher la réactivité
+    const newTransaction = {
+      ...updatedTransaction,
+      amount: Number(updatedTransaction.amount) || 0,
+      date: updatedTransaction.date ? new Date(updatedTransaction.date).toISOString() : null
+    };
+    transactions.value.splice(index, 1, newTransaction);
   }
   selectedTransaction.value = null;
   showTransactionModal.value = false;
