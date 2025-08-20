@@ -48,9 +48,6 @@ Whether you want to track your weekly, monthly, or yearly budget, connect your b
 
 ## 📦 Installation
 
-### Web Version
-- Visit [finantia.example.com](https://finantia.example.com) (replace with your actual URL)
-
 ### Self-Hosted
 1. Clone the repository:
    ```bash
