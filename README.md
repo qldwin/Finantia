@@ -57,21 +57,18 @@ Whether you want to track your weekly, monthly, or yearly budget, connect your b
    git clone https://github.com/yourusername/finantia.git
 
 2. Install dependencies:
-
-  ```bash
-  npm install
+   ```bash
+   npm install
 
 3. Configure your environment variables (see **.env.example**).
 
 4. Run the development server:
-
-  ```bash
-  npm run dev
+   ```bash
+   npm run dev
 
 5. Build for production:
-
-  ```bash
-  npm run build
+   ```bash
+   npm run build
 
 ---
 
