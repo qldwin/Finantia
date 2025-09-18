@@ -13,7 +13,7 @@
           <p class="text-3xl font-bold text-primary-800 dark:text-primary-200">{{ formatCurrency(balance) }}</p>
           <div v-if="balanceChange !== null" class="mt-2 text-sm"
                :class="balanceChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-            <span>{{ balanceChange >= 0 ? '+' : '' }}{{ balanceChange }}%</span> par rapport au mois dernier
+            <span>{{ formatPercent(balanceChange) }}</span> par rapport au mois dernier
           </div>
         </div>
 
@@ -22,7 +22,7 @@
           <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ formatCurrency(monthlyIncome) }}</p>
           <div v-if="incomeChange !== null" class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
             <span :class="incomeChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-              {{ incomeChange >= 0 ? '+' : '' }}{{ incomeChange }}%
+              {{ formatPercent(incomeChange) }}
             </span> par rapport au mois dernier
           </div>
         </div>
@@ -32,7 +32,7 @@
           <p class="text-3xl font-bold text-red-600 dark:text-red-400">{{ formatCurrency(monthlyExpense) }}</p>
           <div v-if="expenseChange !== null" class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
             <span :class="expenseChange <= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-              {{ expenseChange >= 0 ? '+' : '' }}{{ expenseChange }}%
+              {{ formatPercent(expenseChange) }}
             </span> par rapport au mois dernier
           </div>
         </div>
@@ -180,69 +180,129 @@ definePageMeta({
   middleware: ['authenticated']
 });
 
+// ==== STATE ====
 const transactions = ref([]);
 const loading = ref(true);
 const showTransactionModal = ref(false);
 const selectedTransaction = ref(null);
 
-// Statistiques financières
-const balance = computed(() => {
-  return transactions.value.reduce((total, t) => {
-    const amount = Number(t.amount) || 0;
-    return total + (t.type === 'income' ? amount : -amount);
-  }, 0);
+// ==== HELPERS ====
+const now = new Date();
+const currentMonth = now.getMonth();
+const currentYear = now.getFullYear();
+
+const getPreviousMonth = (year, month) => {
+  if (month === 0) {
+    return { year: year - 1, month: 11 };
+  }
+  return { year, month: month - 1 };
+};
+
+const { year: prevYear, month: prevMonth } = getPreviousMonth(currentYear, currentMonth);
+
+const parseDate = (dateString) => {
+  const d = new Date(dateString);
+  return isNaN(d.getTime()) ? null : d;
+};
+
+// ==== COMPUTED ====
+const balance = computed(() =>
+    transactions.value.reduce((total, t) => {
+      const amount = Number(t.amount) || 0;
+      return total + (t.type === 'income' ? amount : -amount);
+    }, 0)
+);
+
+const monthlyBalance = computed(() =>
+  transactions.value
+    .filter(t => {
+      const d = parseDate(t.date);
+      return d && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    })
+    .reduce((total, t) => {
+      const amount = Number(t.amount) || 0;
+      return total + (t.type === 'income' ? amount : -amount);
+    }, 0)
+);
+
+const balanceChange = computed(() => {
+  const prevBalance = transactions.value
+    .filter(t => {
+      const d = parseDate(t.date);
+      return d && d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+    })
+    .reduce((total, t) => {
+      const amount = Number(t.amount) || 0;
+      return total + (t.type === 'income' ? amount : -amount);
+    }, 0);
+
+  if (prevBalance === 0) return null;
+  return ((monthlyBalance.value - prevBalance) / Math.abs(prevBalance)) * 100;
 });
 
-const currentDate = new Date();
-const currentMonth = currentDate.getMonth();
-const currentYear = currentDate.getFullYear();
 
 const monthlyIncome = computed(() =>
     transactions.value
-        .filter(t => t.type === 'income' && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
-        .reduce((sum, t) => sum + Number(t.amount), 0)
+        .filter(t => {
+          const d = parseDate(t.date);
+          return t.type === 'income' && d && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        })
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0)
+);
+
+const previousIncome = computed(() =>
+    transactions.value
+        .filter(t => {
+          const d = parseDate(t.date);
+          return t.type === 'income' && d && d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+        })
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0)
 );
 
 const monthlyExpense = computed(() =>
     transactions.value
-        .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
-        .reduce((sum, t) => sum + Number(t.amount), 0)
+        .filter(t => {
+          const d = parseDate(t.date);
+          return t.type === 'expense' && d && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        })
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0)
 );
 
-// Pourcentages de variation (simulés)
-const balanceChange = ref(0);
-const incomeChange = ref(0);
-const expenseChange = ref(0);
 
-// Charger les transactions de l'utilisateur
+const previousExpense = computed(() =>
+    transactions.value
+        .filter(t => {
+          const d = parseDate(t.date);
+          return t.type === 'expense' && d && d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+        })
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0)
+);
+
+
+const incomeChange = computed(() => {
+  if (previousIncome.value === 0) {
+    return null;
+  }
+  return ((monthlyIncome.value - previousIncome.value) / Math.abs(previousIncome.value)) * 100;
+});
+
+const expenseChange = computed(() => {
+  if (previousExpense.value === 0) {
+    return null; // pour éviter la division par zéro
+  }
+  return ((monthlyExpense.value - previousExpense.value) / Math.abs(previousExpense.value)) * 100;
+});
+
+// ==== API ====
 const loadTransactions = async () => {
   try {
     loading.value = true;
     const response = await $fetch('/api/transactions');
     transactions.value = response.transactions || [];
-  } catch (error) {
-    console.error('Erreur lors du chargement des transactions:', error);
+  } catch (err) {
+    console.error('Erreur lors du chargement des transactions:', err);
   } finally {
     loading.value = false;
-  }
-};
-
-// Ouvrir le modal de nouvelle transaction
-const openTransactionModal = () => {
-  selectedTransaction.value = null;
-  showTransactionModal.value = true;
-};
-
-// Ouvrir le modal d'édition de transaction
-const editTransaction = (transaction) => {
-  selectedTransaction.value = { ...transaction }; // <-- nouvelle référence
-  showTransactionModal.value = true;
-};
-
-// Supprimer une transaction
-const confirmDeleteTransaction = (transaction) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer la transaction "${transaction.description}" ?`)) {
-    deleteTransaction(transaction.id);
   }
 };
 
@@ -250,68 +310,83 @@ const deleteTransaction = async (id) => {
   try {
     await $fetch(`/api/transactions/${id}`, { method: 'DELETE' });
     transactions.value = transactions.value.filter(t => t.id !== id);
-  } catch (error) {
-    console.error('Erreur lors de la suppression de la transaction:', error);
+  } catch (err) {
+    console.error('Erreur lors de la suppression:', err);
   }
 };
 
-// Événement après ajout d'une transaction
+// ==== MODALS ====
+const openTransactionModal = () => {
+  selectedTransaction.value = null;
+  showTransactionModal.value = true;
+};
+
+const editTransaction = (transaction) => {
+  selectedTransaction.value = { ...transaction };
+  showTransactionModal.value = true;
+};
+
+const confirmDeleteTransaction = (transaction) => {
+  if (confirm(`Êtes-vous sûr de vouloir supprimer "${transaction.description}" ?`)) {
+    deleteTransaction(transaction.id);
+  }
+};
+
+// ==== EVENTS ====
 const onTransactionAdded = (transactionArray) => {
   const transaction = transactionArray[0];
+  if (!transaction) return;
 
-  // Créer un nouvel objet pour garantir la réactivité
   const newTransaction = {
     ...transaction,
     amount: Number(transaction.amount) || 0,
     date: transaction.date ? new Date(transaction.date).toISOString() : null
   };
 
-  // Préfixer dans le tableau pour que Vue détecte le changement
   transactions.value = [newTransaction, ...transactions.value];
   showTransactionModal.value = false;
 };
 
-// Événement après mise à jour d'une transaction
 const onTransactionUpdated = (updatedTransaction) => {
-  console.log("Transaction reçue de TransactionModal:", updatedTransaction);
-
   const index = transactions.value.findIndex(t => String(t.id) === String(updatedTransaction.id));
-  console.log("Index trouvé:", index);
-
   if (index !== -1) {
-    const newTransaction = {
+    const normalized = {
       ...updatedTransaction,
       amount: Number(updatedTransaction.amount) || 0,
       date: updatedTransaction.date ? new Date(updatedTransaction.date).toISOString() : null
     };
-    transactions.value.splice(index, 1, newTransaction);
+    transactions.value.splice(index, 1, normalized);
   }
   selectedTransaction.value = null;
   showTransactionModal.value = false;
 };
 
-// Formatter les montants en euros
+// ==== FORMATTERS ====
 const formatCurrency = (amount) => {
   const value = Number(amount);
-  if (isNaN(value)) return '0 €';
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  }).format(value);
+  return isNaN(value)
+      ? '0 €'
+      : new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
 };
 
-// Formatter les dates
 const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return '-';
-  return new Intl.DateTimeFormat('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }).format(date);
+  const d = parseDate(dateString);
+  return !d
+      ? '-'
+      : new Intl.DateTimeFormat('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).format(d);
 };
 
-onMounted(async () => {
-  await loadTransactions();
-});
+const formatPercent = (value) => {
+  if (value === null) return '-';
+  return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
+};
+
+
+// ==== LIFECYCLE ====
+onMounted(loadTransactions);
+
 </script>
