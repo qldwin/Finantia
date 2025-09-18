@@ -1,76 +1,82 @@
 <template>
-  <div class="rounded-2xl bg-blue-100 flex justify-center items-center h-70 mt-20 w-100 mr-auto ml-auto">
-    <div class="flex flex-col">
-      <label class="text-5xl">{{ balance }}€</label>
-      <USelect placeholder="Type de transaction" :items="items" v-model="selectedType"/>
-      <UInput placeholder="Montant" v-model="amount" class="w-25" type="number"></UInput>
-      <UButton type="button" @click="applyTransaction">OK</UButton>
-      <UInput placeholder="Description" v-model="description" class="w-25" />
+  <div class="py-8">
+    <div v-if="user">
+      <!-- ✅ Version connectée -->
+      <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-50 mb-6">
+        Bonjour, {{ user?.name || 'Utilisateur' }}
+      </h1>
+
+      <!-- Résumé financier -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card">
+          <h3 class="text-lg font-medium">Solde total</h3>
+          <p class="text-3xl font-bold text-green-600">{{ formatCurrency(balance) }}</p>
+        </div>
+        <div class="card">
+          <h3 class="text-lg font-medium">Investissements</h3>
+          <p class="text-3xl font-bold text-blue-600">{{ formatCurrency(investments) }}</p>
+        </div>
+        <div class="card">
+          <h3 class="text-lg font-medium">Revenus mensuels</h3>
+          <p class="text-3xl font-bold text-purple-600">{{ formatCurrency(monthlyIncome) }}</p>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" @click="navigateTo('/dashboard')">Accéder au tableau de bord</button>
+    </div>
+
+    <div v-else>
+      <!-- 🚪 Version publique (celle que tu as déjà faite) -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-3 text-neutral-900 dark:text-neutral-50">
+          Bienvenue sur <span class="text-primary-600 dark:text-primary-400">Finantia</span>
+        </h1>
+        <p class="text-lg text-neutral-700 dark:text-neutral-300 max-w-2xl mx-auto">
+          Votre solution pour gérer vos finances personnelles en toute simplicité
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <!-- … tes cartes actuelles … -->
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-primary" @click="navigateTo('/register')">Commencer maintenant</button>
+        <button class="btn btn-outline ml-3" @click="navigateTo('/about')">En savoir plus</button>
+      </div>
     </div>
   </div>
-  <div class="rounded-2xl bg-gray-100 flex flex-col items-start gap-2 p-4 h-auto mt-5 w-100 mr-auto ml-auto">
-    <h2 class="text-xl font-bold mb-2">Historique des transactions</h2>
-    <ul class="w-full space-y-2">
-      <li v-for="tx in transactions" :key="tx.id" class="bg-white rounded-xl p-3 shadow flex justify-between items-center">
-        <span>{{ tx.transaction_type === 'credit' ? '+' : '-' }}{{ tx.amount }}€</span>
-        <span class="text-sm text-gray-500">{{ new Date(tx.date).toLocaleString() }}</span>
-      </li>
-    </ul>
-  </div>
-
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import type { Transaction } from '~/types'
 
-const balance = ref(0);
-const items = ref([
-  { label: 'Débit', value: 'debit' },
-  { label: 'Crédit', value: 'credit' }
-]);
+// Exemple: remplacer par ton vrai système d'auth
+const {user} = useUserSession();
 
-const amount = ref<number | null>(null);
-const selectedType = ref<'debit' | 'credit'>('debit');
-const transactions = ref<any[]>([]);
-const accountId = 1; // À remplacer dynamiquement si nécessaire
-const description = ref('');
+const transactions = ref<Transaction[]>([])
 
-// Charger les transactions existantes depuis l'API
-const fetchTransactions = async () => {
-  const data = await $fetch(`/api/transactions/history?accountId=${accountId}`);
-  transactions.value = data;
+const currentDate = new Date();
+const currentMonth = currentDate.getMonth();
+const currentYear = currentDate.getFullYear();
 
-  // Met à jour le solde localement (optionnel)
-  const newBalance = data.reduce((total: number, tx: any) => {
-    return tx.transactionType === 'credit'
-        ? total + Number(tx.amount)
-        : total - Number(tx.amount);
-  }, 0);
-  balance.value = newBalance;
-};
 
-// Ajouter une transaction
-const applyTransaction = async () => {
-  const numericAmount = parseFloat(amount.value?.toString() || '');
-  if (isNaN(numericAmount) || numericAmount <= 0) return;
+// Exemple pour calculer le solde
+const balance = computed(() =>
+    transactions.value.reduce((total: any, t: any) => {
+      const amount = Number(t.amount) || 0
+      return total + (t.type === 'income' ? amount : -amount)
+    }, 0)
+)
 
-  try {
-    const newTx = await $fetch('/api/transactions/create', {
-      method: 'POST',
-      body: {
-        accountId,
-        transactionType: selectedType.value,
-        amount: numericAmount,
-        description: description.value,
-      },
-    });
+const monthlyIncome = computed(() =>
+    transactions.value
+        .filter(t => t.type === 'income' && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
+        .reduce((sum, t) => sum + Number(t.amount), 0)
+);
 
-    transactions.value.unshift(newTx);
-    balance.value += selectedType.value === 'credit' ? numericAmount : -numericAmount;
-    amount.value = null;
-    description.value = '';
-  } catch (err) {
-    console.error('Erreur lors de la création de la transaction', err);
-  }
-};
+const investments = ref(3200)
+
+const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
 </script>

@@ -1,5 +1,4 @@
-import { db } from '~/src/db';
-import { historyTransacts } from '~/src/schema';
+import { db } from '~/server/db';
 import { desc, eq } from 'drizzle-orm';
 
 export default defineEventHandler(async (event) => {
