@@ -109,32 +109,32 @@
             </div>
 
             <div class="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-              <span>Catégorie: <span class="font-medium">{{ budget.category }}</span></span>
+              <span>Catégorie: <span class="font-medium">{{ budget.categories }}</span></span>
               <span class="mx-2">•</span>
               <span>Période: <span class="font-medium">{{ formatPeriod(budget.period) }}</span></span>
             </div>
 
             <div class="mb-2 flex justify-between">
               <span class="text-neutral-700 dark:text-neutral-300">
-                {{ formatCurrency(getCategoryExpenses(budget.category)) }} dépensés sur {{
+                {{ formatCurrency(getCategoryExpenses(budget.categories)) }} dépensés sur {{
                   formatCurrency(budget.amount)
                 }}
               </span>
               <span
                   class="font-medium"
-                  :class="getCategoryExpenses(budget.category) > budget.amount ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'"
+                  :class="getCategoryExpenses(budget.categories) > budget.amount ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'"
               >
                 {{
-                  getCategoryExpenses(budget.category) > budget.amount ? 'Dépassé' : 'Restant'
-                }}: {{ formatCurrency(Math.abs(budget.amount - getCategoryExpenses(budget.category))) }}
+                  getCategoryExpenses(budget.categories) > budget.amount ? 'Dépassé' : 'Restant'
+                }}: {{ formatCurrency(Math.abs(budget.amount - getCategoryExpenses(budget.categories))) }}
               </span>
             </div>
 
             <div class="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
               <div
                   class="h-2 rounded-full"
-                  :class="getCategoryExpenses(budget.category) > budget.amount ? 'bg-red-500' : 'bg-primary-600'"
-                  :style="{ width: `${Math.min((getCategoryExpenses(budget.category) / budget.amount) * 100, 100)}%` }"
+                  :class="getCategoryExpenses(budget.categories) > budget.amount ? 'bg-red-500' : 'bg-primary-600'"
+                  :style="{ width: `${Math.min((getCategoryExpenses(budget.categories) / budget.amount) * 100, 100)}%` }"
               ></div>
             </div>
           </div>
@@ -351,7 +351,7 @@ const editBudget = (budget) => {
   budgetForm.value = {
     name: budget.name,
     amount: budget.amount,
-    category: budget.category,
+    category: budget.categories,
     period: budget.period,
     startDate: budget.startDate.split('T')[0]
   };
@@ -371,7 +371,7 @@ const saveBudget = async () => {
     const payload = {
       name: budgetForm.value.name,
       amount: Number(budgetForm.value.amount),
-      category: budgetForm.value.category,
+      category: transactions.value.category,
       period: budgetForm.value.period,
       startDate: new Date(budgetForm.value.startDate).toISOString(),
       endDate: undefined // Si besoin de définir une date de fin
