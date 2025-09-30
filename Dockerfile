@@ -25,7 +25,7 @@ COPY --from=builder /app/.output ./
 
 # Installer uniquement les dépendances de production
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
 EXPOSE 3000
 
