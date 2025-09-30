@@ -1,5 +1,4 @@
-# Étape 1 : builder Nuxt
-FROM node:20-alpine AS builder
+FROM node:24
 
 WORKDIR /app
 
@@ -14,20 +13,5 @@ COPY . ./
 
 # Build Nuxt
 RUN npm run build
-
-# Étape 2 : image finale pour production
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Copier le build depuis l'image builder
-COPY --from=builder /app/.output ./
-
-# Installer uniquement les dépendances de production
-COPY package*.json ./
-RUN npm install
-
 EXPOSE 3000
-
-# Lancer Nuxt
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
