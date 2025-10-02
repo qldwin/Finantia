@@ -1,0 +1,17 @@
+FROM node:24
+
+WORKDIR /app
+
+# Copier package.json et package-lock.json
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier tout le projet
+COPY . ./
+
+# Build Nuxt
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "start"]
