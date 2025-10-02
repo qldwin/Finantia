@@ -14,4 +14,4 @@ COPY . ./
 # Build Nuxt
 RUN npm run build
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD npx drizzle-kit migrate && node ./server/index.mjs
