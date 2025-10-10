@@ -36,8 +36,8 @@
           <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">
             <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Restant</h3>
             <p class="text-2xl font-bold"
-               :class="totalBudget - totalExpenses < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
-              {{ formatCurrency(totalBudget - totalExpenses) }}</p>
+               :class="totalRest = totalBudget - totalExpenses < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+              {{ formatCurrency(totalRest) }}</p>
           </div>
         </div>
 
@@ -185,17 +185,12 @@
 
             <div>
               <label for="category" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Catégorie</label>
-              <select
-                  id="category"
-                  v-model="budgetForm.category"
-                  class="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
-                  required
-              >
-                <option value="" disabled>Sélectionner une catégorie</option>
-                <option v-for="category in EXPENSE_CATEGORIES" :key="category" :value="category">
-                  {{ category }}
-                </option>
-              </select>
+             <select id="category" v-model="budgetForm.category" class="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors" required>
+               <option value="" disabled>Sélectionner une catégorie</option>
+               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                 {{ cat.name }}
+               </option>
+             </select>
             </div>
 
             <div>
@@ -272,7 +267,7 @@ const sortedBudgets = computed(() => {
 });
 
 // Total des budgets
-const totalBudget = computed(() => {
+const totalRest = computed(() => {
   return sortedBudgets.value.reduce((total, budget) => total + budget.amount, 0);
 });
 
@@ -297,7 +292,11 @@ const filteredTransactions = computed(() => {
 
 // Total des dépenses pour la période actuelle
 const totalExpenses = computed(() => {
-  return filteredTransactions.value.reduce((sum, t) => sum + t.amount, 0);
+  return filteredTransactions.value.reduce((sum, t) => sum + Number(t.amount), 0);
+});
+
+const totalBudget = computed(() => {
+  return sortedBudgets.value.reduce((total, budget) => total + Number(budget.amount), 0);
 });
 
 // Récupérer les dépenses par catégorie
@@ -305,6 +304,17 @@ const getCategoryExpenses = (category) => {
   return filteredTransactions.value
       .filter(t => t.category === category)
       .reduce((sum, t) => sum + t.amount, 0);
+};
+
+const categories = ref([]);
+
+const loadCategories = async () => {
+  try {
+    const res = await $fetch('/api/budgets/categories');
+    categories.value = res.categories || [];
+  } catch (err) {
+    console.error('Erreur lors du chargement des catégories :', err);
+  }
 };
 
 // Charger les budgets
@@ -371,10 +381,10 @@ const saveBudget = async () => {
     const payload = {
       name: budgetForm.value.name,
       amount: Number(budgetForm.value.amount),
-      category: transactions.value.category,
+      categoryId: budgetForm.value.category,
       period: budgetForm.value.period,
       startDate: new Date(budgetForm.value.startDate).toISOString(),
-      endDate: undefined // Si besoin de définir une date de fin
+      endDate: undefined
     };
 
     let response;
@@ -461,7 +471,8 @@ const formatPeriod = (period) => {
 onMounted(async () => {
   await Promise.all([
     loadBudgets(),
-    loadTransactions()
+    loadTransactions(),
+    loadCategories()
   ]);
 });
 
