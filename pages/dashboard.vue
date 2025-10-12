@@ -53,7 +53,7 @@
           <span class="text-neutral-900 dark:text-neutral-50 font-medium">Nouvelle transaction</span>
         </button>
 
-        <button @click="openBudgetModal"
+        <button @click="navigateTo('/budget')"
                 class="card hover:shadow-md transition-shadow flex flex-col items-center justify-center p-4 text-center">
           <div class="rounded-full bg-primary-100 dark:bg-primary-900/30 p-3 mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600 dark:text-primary-400" fill="none"
