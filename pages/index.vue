@@ -75,7 +75,7 @@ const monthlyIncome = computed(() =>
         .reduce((sum, t) => sum + Number(t.amount), 0)
 );
 
-const investments = ref()
+const investments = ref( )
 
 const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
