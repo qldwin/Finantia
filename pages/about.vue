@@ -26,8 +26,8 @@
           Vous avez des questions, des suggestions ou des retours à nous faire ? Nous serions ravis de vous entendre.
         </p>
         <div class="flex flex-col sm:flex-row gap-4">
-          <button class="btn btn-primary">Envoyer un message</button>
-          <button class="btn btn-outline">Consulter notre FAQ</button>
+          <button disabled class="btn btn-primary">Envoyer un message</button>
+          <button disabled class="btn btn-outline">Consulter notre FAQ</button>
         </div>
       </div>
     </div>
