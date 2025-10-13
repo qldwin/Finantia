@@ -3,7 +3,7 @@ import { defineEventHandler, useSession } from 'h3';
 // Configuration de session commune pour toute l'application
 export const SESSION_CONFIG = {
   name: 'finantia-session',
-  password: 'finantia-session-key-secret-12345',
+  password: process.env.SECRET_KEY!,
   maxAge: 60 * 60 * 24 * 7, // 7 jours par défaut
   cookie: {
     sameSite: 'lax' as const,
