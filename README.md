@@ -99,9 +99,6 @@ Créez un fichier `.env` à la racine du projet :
 # Database
 DATABASE_URL=postgresql://finantia_user:finantia_password@localhost:5432/finantia
 
-# Application
-NUXT_PUBLIC_APP_URL=http://localhost:3000
-NUXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 ## 📊 Base de Données
 
