@@ -3,7 +3,7 @@ import { defineEventHandler, useSession } from 'h3';
 // Configuration de session commune pour toute l'application
 export const SESSION_CONFIG = {
   name: 'finantia-session',
-  password: process.env.SECRET_KEY!,
+  password: process.env.NUXT_SESSION_PASSWORD!,
   maxAge: 60 * 60 * 24 * 7, // 7 jours par défaut
   cookie: {
     sameSite: 'lax' as const,
