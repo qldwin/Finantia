@@ -21,9 +21,9 @@
                      class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Nom</label>
               <input
                   id="name"
-                  v-model="form.name"
                   type="text"
                   class="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                  :value="user.name"
               >
             </div>
 
@@ -35,6 +35,8 @@
                   type="email"
                   readonly
                   class="w-full px-3 py-2 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-500 dark:text-neutral-400"
+                  :value="user.email"
+                  disabled
               >
               <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">L'email ne peut pas être modifié</p>
             </div>
@@ -122,6 +124,8 @@
 </template>
 
 <script setup>
+import {users} from "~/drizzle/schema.js";
+
 definePageMeta({
   middleware: ['authenticated'],
 })
@@ -140,20 +144,20 @@ const error = ref('');
 const success = ref('');
 
 // Vérifier si le formulaire est valide
-// const formValid = computed(() => {
-//   // Si l'utilisateur veut changer de mot de passe
-//   if (form.value.currentPassword || form.value.newPassword || form.value.confirmPassword) {
-//     return (
-//         form.value.currentPassword &&
-//         form.value.newPassword &&
-//         form.value.newPassword === form.value.confirmPassword &&
-//         form.value.newPassword.length >= 8
-//     );
-//   }
-//
-//   // Si seulement le nom est modifié
-//   return form.value.name.length >= 2;
-// });
+const formValid = computed(() => {
+  // Si l'utilisateur veut changer de mot de passe
+  if (form.value.currentPassword || form.value.newPassword || form.value.confirmPassword) {
+    return (
+        form.value.currentPassword &&
+        form.value.newPassword &&
+        form.value.newPassword === form.value.confirmPassword &&
+        form.value.newPassword.length >= 8
+    );
+  }
+
+  // Si seulement le nom est modifié
+  return form.value.name.length >= 2;
+});
 
 // Charger les données de l'utilisateur
 const loadUserData = async () => {
@@ -163,9 +167,9 @@ const loadUserData = async () => {
     if (user) {
       form.value.name = '';
       form.value.email = '';
-      // form.value.currentPassword = '';
-      // form.value.newPassword = '';
-      // form.value.confirmPassword = '';
+      form.value.currentPassword = '';
+      form.value.newPassword = '';
+      form.value.confirmPassword = '';
     }
   } catch (err) {
     error.value = "Erreur lors du chargement des données";
@@ -175,24 +179,41 @@ const loadUserData = async () => {
 
 // Mettre à jour le profil
 async function updateProfile() {
-  error.value = '';
-  success.value = '';
+  error.value = ''
+  success.value = ''
+
+  // Validation simple côté client
+  if (
+    form.value.currentPassword &&
+    (!form.value.newPassword ||
+      form.value.newPassword !== form.value.confirmPassword)
+  ) {
+    error.value = 'Les mots de passe ne correspondent pas.'
+    return
+  }
 
   try {
-    // Simuler une mise à jour de profil
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Envoi de la requête PATCH
+    const res = await $fetch('/api/auth/user', {
+      method: 'PATCH',
+      body: {
+        currentPassword: form.value.currentPassword,
+        newPassword: form.value.newPassword,
+      },
+    })
 
-    success.value = "Profil mis à jour avec succès !";
+    success.value = res.message || 'Profil mis à jour avec succès !'
 
-    // Réinitialiser les champs de mot de passe
-    form.value.currentPassword = '';
-    form.value.newPassword = '';
-    form.value.confirmPassword = '';
-
-    // Recharger les données utilisateur
+    // Réinitialiser les champs sensibles
+    form.value.currentPassword = ''
+    form.value.newPassword = ''
+    form.value.confirmPassword = ''
   } catch (err) {
-    error.value = err.statusMessage || "Erreur lors de la mise à jour du profil";
-    console.error(err);
+    console.error(err)
+    error.value =
+      err.data?.message ||
+      err.statusMessage ||
+      'Erreur lors de la mise à jour du mot de passe'
   }
 }
 
