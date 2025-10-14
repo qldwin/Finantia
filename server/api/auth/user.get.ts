@@ -1,10 +1,11 @@
 import {eq} from 'drizzle-orm';
 import {db} from "~/server/db";
 import {users} from "~/drizzle/schema";
+import session from "~/server/middleware/session";
 
 export default defineEventHandler(async (event) => {
     try {
-        if (!session.data.loggedIn || !session.data.user) {
+        if (!event.context.session?.data?.loggedIn || !event.context.session?.data?.user) {
             return createError({
                 statusCode: 401,
                 message: 'Non authentifié'
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // Récupérer les informations de l'utilisateur depuis la base de données
-        const userId = session.data.user.id;
+        const userId = event.context.session?.data?.user?.id;
 
         // Protection contre les userId null ou non valides
         if (!userId) {
