@@ -6,7 +6,6 @@ const credentials = ref({
 });
 
 async function handleLogin() {
-  console.log('Login', credentials)
   $fetch('/api/auth/login', {
     method: 'POST',
     body: {

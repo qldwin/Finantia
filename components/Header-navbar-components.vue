@@ -19,14 +19,6 @@
           </NuxtLink>
 
           <NuxtLink
-              to="/dashboard"
-              class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              active-class="text-primary-600 dark:text-primary-400 font-medium"
-          >
-            Tableau de bord
-          </NuxtLink>
-
-          <NuxtLink
               to="/budget"
               class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               active-class="text-primary-600 dark:text-primary-400 font-medium"

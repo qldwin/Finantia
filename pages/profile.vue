@@ -144,7 +144,6 @@ const form = ref({
   newPassword: '',
   confirmPassword: ''
 });
-console.log("session", session)
 const error = ref('');
 const success = ref('');
 
@@ -165,8 +164,6 @@ computed(() => {
 });
 // Charger les données de l'utilisateur
 const loadUserData = async () => {
-  console.log("user session", session)
-  console.log("user", user)
   try {
     if (user) {
       form.value.name = '';
