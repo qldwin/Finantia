@@ -1,7 +1,6 @@
 import {eq} from 'drizzle-orm';
 import {db} from "~/server/db";
 import {users} from "~/drizzle/schema";
-import session from "~/server/middleware/session";
 
 export default defineEventHandler(async (event) => {
     try {

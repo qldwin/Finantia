@@ -49,8 +49,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Transaction } from '~/types'
-
 // Exemple: remplacer par ton vrai système d'auth
 const {user} = useUserSession();
 

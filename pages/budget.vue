@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-50">Budgets</h1>
 
-        <button @click="navigateTo('/dashboard')" class="btn btn-outline text-sm px-3 py-1">
+        <button class="btn btn-outline text-sm px-3 py-1" @click="navigateTo('/dashboard')">
           Retour au tableau de bord
         </button>
       </div>
@@ -15,7 +15,7 @@
           <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-50">Budget Total - {{
               currentPeriodLabel
             }}</h2>
-          <button @click="openAddBudgetModal()" class="btn btn-primary text-sm px-3 py-1">
+          <button class="btn btn-primary text-sm px-3 py-1" @click="openAddBudgetModal()">
             Nouveau budget
           </button>
         </div>
@@ -28,14 +28,16 @@
 
           <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">
             <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Dépenses actuelles</h3>
-            <p class="text-2xl font-bold"
+            <p
+class="text-2xl font-bold"
                :class="totalExpenses > totalBudget ? 'text-red-600 dark:text-red-400' : 'text-neutral-900 dark:text-neutral-50'">
               {{ formatCurrency(totalExpenses) }}</p>
           </div>
 
           <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">
             <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Restant</h3>
-            <p class="text-2xl font-bold"
+            <p
+class="text-2xl font-bold"
                :class="totalRest = totalBudget - totalExpenses < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
               {{ formatCurrency(totalRest) }}</p>
           </div>
@@ -55,7 +57,7 @@
                 class="h-2.5 rounded-full"
                 :class="totalExpenses > totalBudget ? 'bg-red-500' : 'bg-primary-600'"
                 :style="{ width: `${Math.min((totalExpenses / totalBudget) * 100, 100)}%` }"
-            ></div>
+            />
           </div>
         </div>
       </div>
@@ -66,7 +68,8 @@
           <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-50">Budgets par catégorie</h2>
           <div class="flex items-center space-x-2">
             <label class="text-sm text-neutral-700 dark:text-neutral-300">Période : </label>
-            <select v-model="currentPeriod"
+            <select
+v-model="currentPeriod"
                     class="px-3 py-1 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded text-sm">
               <option value="monthly">Mensuel</option>
               <option value="yearly">Annuel</option>
@@ -75,7 +78,7 @@
         </div>
 
         <div v-if="loading" class="flex justify-center my-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"/>
         </div>
 
         <div v-else-if="budgets.length === 0" class="text-center py-8">
@@ -89,19 +92,25 @@
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-lg font-medium text-neutral-900 dark:text-neutral-50">{{ budget.name }}</h3>
               <div class="flex items-center space-x-2">
-                <button @click="editBudget(budget)"
-                        class="text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                <button
+class="text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400"
+                        @click="editBudget(budget)">
+                  <svg
+xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                        stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    <path
+stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                   </svg>
                 </button>
-                <button @click="confirmDeleteBudget(budget)"
-                        class="text-neutral-500 hover:text-red-600 dark:hover:text-red-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                <button
+class="text-neutral-500 hover:text-red-600 dark:hover:text-red-400"
+                        @click="confirmDeleteBudget(budget)">
+                  <svg
+xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                        stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    <path
+stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                   </svg>
                 </button>
@@ -135,7 +144,7 @@
                   class="h-2 rounded-full"
                   :class="getCategoryExpenses(budget.categories) > budget.amount ? 'bg-red-500' : 'bg-primary-600'"
                   :style="{ width: `${Math.min((getCategoryExpenses(budget.categories) / budget.amount) * 100, 100)}%` }"
-              ></div>
+              />
             </div>
           </div>
         </div>
@@ -144,41 +153,43 @@
 
     <!-- Modal pour ajouter/éditer un budget -->
     <div v-if="showBudgetModal" class="fixed inset-0 z-50 flex items-center justify-center">
-      <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm" @click="closeBudgetModal"></div>
+      <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm" @click="closeBudgetModal"/>
       <div class="bg-white dark:bg-neutral-800 shadow-xl rounded-lg w-full max-w-md mx-auto z-50 relative">
         <div class="p-6">
           <h2 class="text-xl font-bold mb-6 text-neutral-900 dark:text-neutral-50">
             {{ editingBudget ? 'Modifier le budget' : 'Nouveau budget' }}
           </h2>
 
-          <form @submit.prevent="saveBudget" class="space-y-4">
+          <form class="space-y-4" @submit.prevent="saveBudget">
             <div>
-              <label for="name"
+              <label
+for="name"
                      class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Nom</label>
               <input
-                  type="text"
                   id="name"
                   v-model="budgetForm.name"
+                  type="text"
                   class="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
                   placeholder="Budget alimentaire, Loisirs, etc."
                   required
-              />
+              >
             </div>
 
             <div>
-              <label for="amount"
+              <label
+for="amount"
                      class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Montant</label>
               <div class="relative">
                 <input
-                    type="number"
                     id="amount"
                     v-model.number="budgetForm.amount"
+                    type="number"
                     class="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors pr-10"
                     step="0.01"
                     min="0.01"
                     placeholder="0.00"
                     required
-                />
+                >
                 <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-500">€</span>
               </div>
             </div>
@@ -194,7 +205,8 @@
             </div>
 
             <div>
-              <label for="period"
+              <label
+for="period"
                      class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Période</label>
               <select
                   id="period"
@@ -210,8 +222,8 @@
             <div class="flex justify-end gap-3 pt-4">
               <button
                   type="button"
-                  @click="closeBudgetModal"
                   class="px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                  @click="closeBudgetModal"
               >
                 Annuler
               </button>

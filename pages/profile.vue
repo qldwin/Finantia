@@ -4,12 +4,14 @@
       <h1 class="text-3xl font-bold mb-6 text-neutral-900 dark:text-neutral-50">Profil utilisateur</h1>
 
       <div class="card mb-8">
-        <div v-if="error"
+        <div
+v-if="error"
              class="p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg text-sm mb-4">
           {{ error }}
         </div>
 
-        <div v-if="success"
+        <div
+v-if="success"
              class="p-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-lg text-sm mb-4">
           {{ success }}
         </div>
@@ -17,7 +19,8 @@
         <form class="space-y-6" @submit.prevent="updateProfile">
           <div class="flex flex-col md:flex-row gap-4 mb-4">
             <div class="w-full md:w-1/2">
-              <label for="name"
+              <label
+for="name"
                      class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Nom</label>
               <input
                   id="name"
@@ -28,7 +31,8 @@
             </div>
 
             <div class="w-full md:w-1/2">
-              <label for="email"
+              <label
+for="email"
                      class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Email</label>
               <input
                   id="email"
@@ -47,7 +51,8 @@
 
             <div class="space-y-4">
               <div>
-                <label for="current-password"
+                <label
+for="current-password"
                        class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Mot de passe
                   actuel</label>
                 <input
@@ -61,7 +66,8 @@
 
               <div class="flex flex-col md:flex-row gap-4">
                 <div class="w-full md:w-1/2">
-                  <label for="new-password"
+                  <label
+for="new-password"
                          class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Nouveau mot de
                     passe</label>
                   <input
@@ -75,7 +81,8 @@
                 </div>
 
                 <div class="w-full md:w-1/2">
-                  <label for="confirm-password"
+                  <label
+for="confirm-password"
                          class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Confirmer le
                     nouveau mot de passe</label>
                   <input
@@ -124,8 +131,6 @@
 </template>
 
 <script setup>
-import {users} from "~/drizzle/schema.js";
-
 definePageMeta({
   middleware: ['authenticated'],
 })
@@ -144,7 +149,7 @@ const error = ref('');
 const success = ref('');
 
 // Vérifier si le formulaire est valide
-const formValid = computed(() => {
+computed(() => {
   // Si l'utilisateur veut changer de mot de passe
   if (form.value.currentPassword || form.value.newPassword || form.value.confirmPassword) {
     return (
@@ -158,7 +163,6 @@ const formValid = computed(() => {
   // Si seulement le nom est modifié
   return form.value.name.length >= 2;
 });
-
 // Charger les données de l'utilisateur
 const loadUserData = async () => {
   console.log("user session", session)
