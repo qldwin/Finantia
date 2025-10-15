@@ -1,4 +1,5 @@
 import { defineEventHandler, useSession } from 'h3';
+import * as crypto from 'crypto';
 
 // Configuration de session commune pour toute l'application
 export const SESSION_CONFIG = {
@@ -24,7 +25,9 @@ interface SessionData {
 
 // Créer une session minimale pour utiliser en cas d'erreur
 function createMinimalSession() {
-  const sessionId = crypto.randomUUID?.() || Math.random().toString(36).substring(2);
+  const sessionId = typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : crypto.randomBytes(16).toString('hex');
   
   return {
     id: sessionId,
