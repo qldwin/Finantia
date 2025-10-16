@@ -19,6 +19,14 @@
           </NuxtLink>
 
           <NuxtLink
+              to="/dashboard"
+              class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              active-class="text-primary-600 dark:text-primary-400 font-medium"
+          >
+            Tableau de bord
+          </NuxtLink>
+
+          <NuxtLink
               to="/budget"
               class="px-3 py-2 text-sm rounded-md text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               active-class="text-primary-600 dark:text-primary-400 font-medium"
@@ -61,13 +69,6 @@
                   @click="isDropdownOpen = false"
               >
                 Mon profil
-              </NuxtLink>
-              <NuxtLink
-                  to="/dashboard"
-                  class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                  @click="isDropdownOpen = false"
-              >
-                Tableau de bord
               </NuxtLink>
               <button
                   class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
