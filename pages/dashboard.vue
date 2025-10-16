@@ -122,7 +122,6 @@ definePageMeta({
 
 // ==== STATE ====
 const transactions = ref([]);
-const loading = ref(true);
 const showTransactionModal = ref(false);
 
 // ==== HELPERS ====
@@ -236,6 +235,19 @@ const expenseChange = computed(() => {
 const openTransactionModal = () => {
   selectedTransaction.value = null;
   showTransactionModal.value = true;
+};
+
+const loadTransactions = async () => {
+  try {
+    loading.value = true;
+    const response = await $fetch('/api/transactions');
+    transactions.value = response.transactions || [];
+  } catch (error) {
+    console.error('Erreur lors du chargement des transactions:', error);
+    // toast.error('Erreur lors du chargement des transactions');
+  } finally {
+    loading.value = false;
+  }
 };
 
 // ==== EVENTS ====
