@@ -124,7 +124,6 @@ definePageMeta({
 const transactions = ref([]);
 const loading = ref(true);
 const showTransactionModal = ref(false);
-const selectedTransaction = ref(null);
 
 // ==== HELPERS ====
 const now = new Date();
@@ -233,43 +232,10 @@ const expenseChange = computed(() => {
   return ((monthlyExpense.value - previousExpense.value) / Math.abs(previousExpense.value)) * 100;
 });
 
-// ==== API ====
-const loadTransactions = async () => {
-  try {
-    loading.value = true;
-    const response = await $fetch('/api/transactions');
-    transactions.value = response.transactions || [];
-  } catch (err) {
-    console.error('Erreur lors du chargement des transactions:', err);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const deleteTransaction = async (id) => {
-  try {
-    await $fetch(`/api/transactions/${id}`, { method: 'DELETE' });
-    transactions.value = transactions.value.filter(t => t.id !== id);
-  } catch (err) {
-    console.error('Erreur lors de la suppression:', err);
-  }
-};
-
 // ==== MODALS ====
 const openTransactionModal = () => {
   selectedTransaction.value = null;
   showTransactionModal.value = true;
-};
-
-const editTransaction = (transaction) => {
-  selectedTransaction.value = { ...transaction };
-  showTransactionModal.value = true;
-};
-
-const confirmDeleteTransaction = (transaction) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer "${transaction.description}" ?`)) {
-    deleteTransaction(transaction.id);
-  }
 };
 
 // ==== EVENTS ====
@@ -309,24 +275,9 @@ const formatCurrency = (amount) => {
       : new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
 };
 
-const formatDate = (dateString) => {
-  const d = parseDate(dateString);
-  return !d
-      ? '-'
-      : new Intl.DateTimeFormat('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }).format(d);
-};
-
 const formatPercent = (value) => {
   if (value === null) return '-';
   return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
 };
-
-
-// ==== LIFECYCLE ====
-onMounted(loadTransactions);
 
 </script>
