@@ -251,9 +251,9 @@ const getIncomeVsExpensesData = () => {
       if (date.getMonth() === month && date.getFullYear() === year) {
         const day = date.getDate() - 1;
         if (t.type === 'income') {
-          incomeData[day] += t.amount;
+          incomeData[day] += Number(t.amount);
         } else {
-          expenseData[day] += t.amount;
+          expenseData[day] += Number(t.amount);
         }
       }
     });
@@ -293,9 +293,9 @@ const getIncomeVsExpensesData = () => {
       const monthIndex = date.getMonth() - quarter * 3;
       if (monthIndex >= 0 && monthIndex < 3) {
         if (t.type === 'income') {
-          incomeData[monthIndex] += t.amount;
+          incomeData[monthIndex] += Number(t.amount);
         } else {
-          expenseData[monthIndex] += t.amount;
+          expenseData[monthIndex] += Number(t.amount);
         }
       }
     });
@@ -330,9 +330,9 @@ const getIncomeVsExpensesData = () => {
       const date = new Date(t.date);
       const monthIndex = date.getMonth();
       if (t.type === 'income') {
-        incomeData[monthIndex] += t.amount;
+        incomeData[monthIndex] += Number(t.amount);
       } else {
-        expenseData[monthIndex] += t.amount;
+        expenseData[monthIndex] += Number(t.amount);
       }
     });
     
@@ -374,9 +374,9 @@ const getBalanceHistoryData = () => {
   
   sortedTransactions.forEach(t => {
     if (t.type === 'income') {
-      balance += t.amount;
+      balance += Number(t.amount);
     } else {
-      balance -= t.amount;
+      balance -= Number(t.amount);
     }
     balances.push(balance);
     dates.push(formatDate(t.date));
@@ -408,7 +408,7 @@ const getExpensesByCategoryData = () => {
       if (!expensesByCategory[category]) {
         expensesByCategory[category] = 0;
       }
-      expensesByCategory[category] += t.amount;
+      expensesByCategory[category] += Number(t.amount);
     });
   
   const categories = Object.keys(expensesByCategory);
@@ -438,7 +438,7 @@ const getIncomeByCategoryData = () => {
       if (!incomeByCategory[category]) {
         incomeByCategory[category] = 0;
       }
-      incomeByCategory[category] += t.amount;
+      incomeByCategory[category] += Number(t.amount);
     });
   
   const categories = Object.keys(incomeByCategory);
