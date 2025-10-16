@@ -127,6 +127,14 @@ for="confirm-password"
         </button>
       </div>
     </div>
+
+    <!-- ConfirmDialog pour les confirmations -->
+    <ConfirmDialog
+      :is-open="isConfirmOpen"
+      :options="confirmOptions"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -174,7 +182,6 @@ const loadUserData = async () => {
     }
   } catch (err) {
     error.value = "Erreur lors du chargement des données";
-    console.error(err);
   }
 };
 
@@ -219,8 +226,18 @@ async function updateProfile() {
 }
 
 // Confirmer la suppression du compte
+const { confirm: confirmModal, isOpen: isConfirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
+
 async function confirmDeleteAccount() {
-  if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
+  const confirmed = await confirmModal({
+    title: 'Supprimer le compte',
+    message: "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+    confirmText: 'Supprimer définitivement',
+    cancelText: 'Annuler',
+    type: 'danger'
+  });
+
+  if (confirmed) {
     try {
       error.value = '';
       isLoading.value = true;
@@ -237,7 +254,6 @@ async function confirmDeleteAccount() {
       toast.success('Votre compte a été supprimé avec succès');
     } catch (err) {
       error.value = err.statusMessage || "Erreur lors de la suppression du compte";
-      console.error(err);
     } finally {
       isLoading.value = false;
     }

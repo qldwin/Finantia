@@ -2,7 +2,17 @@ import { db } from '~/server/db';
 import { budgets, budgetCategories, categories } from '~/drizzle/schema';
 import { eq } from 'drizzle-orm';
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    // Vérifier l'authentification
+    const { user } = await requireUserSession(event);
+
+    if (!user || !user.id) {
+        throw createError({
+            statusCode: 401,
+            message: 'Non authentifié'
+        });
+    }
+
     const rows = await db.select({
         id: budgets.id,
         name: budgets.name,
@@ -14,7 +24,8 @@ export default defineEventHandler(async () => {
     })
         .from(budgets)
         .leftJoin(budgetCategories, eq(budgets.id, budgetCategories.budgetId))
-        .leftJoin(categories, eq(budgetCategories.categoryId, categories.id));
+        .leftJoin(categories, eq(budgetCategories.categoryId, categories.id))
+        .where(eq(budgets.userId, user.id));
 
     const budgetsWithCategories = rows.reduce((acc, row) => {
         const existing = acc.find(b => b.id === row.id);

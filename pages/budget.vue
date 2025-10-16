@@ -118,7 +118,7 @@ stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             </div>
 
             <div class="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-              <span>Catégorie: <span class="font-medium">{{ budget.categories }}</span></span>
+              <span>Catégorie: <span class="font-medium">{{ budget.categories?.map(c => c.name).join(', ') || 'Aucune' }}</span></span>
               <span class="mx-2">•</span>
               <span>Période: <span class="font-medium">{{ formatPeriod(budget.period) }}</span></span>
             </div>
@@ -240,6 +240,14 @@ for="period"
         </div>
       </div>
     </div>
+
+    <!-- ConfirmDialog pour les confirmations -->
+    <ConfirmDialog
+      :is-open="isConfirmOpen"
+      :options="confirmOptions"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    />
   </div>
 </template>
 
@@ -312,10 +320,15 @@ const totalBudget = computed(() => {
 });
 
 // Récupérer les dépenses par catégorie
-const getCategoryExpenses = (category) => {
+const getCategoryExpenses = (categories) => {
+  if (!categories || categories.length === 0) return 0;
+
+  // Extraire les noms des catégories
+  const categoryNames = categories.map(c => c.name);
+
   return filteredTransactions.value
-      .filter(t => t.category === category)
-      .reduce((sum, t) => sum + t.amount, 0);
+      .filter(t => categoryNames.includes(t.category))
+      .reduce((sum, t) => sum + Number(t.amount), 0);
 };
 
 const categories = ref([]);
@@ -325,7 +338,7 @@ const loadCategories = async () => {
     const res = await $fetch('/api/budgets/categories');
     categories.value = res.categories || [];
   } catch (err) {
-    console.error('Erreur lors du chargement des catégories :', err);
+    // Afficher un toast d'erreur ici
   }
 };
 
@@ -336,7 +349,6 @@ const loadBudgets = async () => {
     const response = await $fetch('/api/budgets');
     budgets.value = response.budgets || [];
   } catch (error) {
-    console.error('Erreur lors du chargement des budgets:', error);
     // Afficher un toast d'erreur ici
   }
 };
@@ -347,7 +359,6 @@ const loadTransactions = async () => {
     const response = await $fetch('/api/transactions');
     transactions.value = response.transactions || [];
   } catch (error) {
-    console.error('Erreur lors du chargement des transactions:', error);
     // Afficher un toast d'erreur ici
   } finally {
     loading.value = false;
@@ -373,7 +384,7 @@ const editBudget = (budget) => {
   budgetForm.value = {
     name: budget.name,
     amount: budget.amount,
-    category: budget.categories,
+    category: budget.categories && budget.categories.length > 0 ? budget.categories[0].id : '',
     period: budget.period,
     startDate: budget.startDate.split('T')[0]
   };
@@ -430,7 +441,6 @@ const saveBudget = async () => {
 
     closeBudgetModal();
   } catch (error) {
-    console.error('Erreur lors de l\'enregistrement du budget:', error);
     // Afficher un toast d'erreur ici
   } finally {
     isSubmitting.value = false;
@@ -438,8 +448,18 @@ const saveBudget = async () => {
 };
 
 // Confirmer la suppression d'un budget
-const confirmDeleteBudget = (budget) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer le budget "${budget.name}" ?`)) {
+const { confirm: confirmModal, isOpen: isConfirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
+
+const confirmDeleteBudget = async (budget) => {
+  const confirmed = await confirmModal({
+    title: 'Supprimer le budget',
+    message: `Êtes-vous sûr de vouloir supprimer le budget "${budget.name}" ?`,
+    confirmText: 'Supprimer',
+    cancelText: 'Annuler',
+    type: 'danger'
+  });
+
+  if (confirmed) {
     deleteBudget(budget.id);
   }
 };
@@ -456,7 +476,6 @@ const deleteBudget = async (id) => {
 
     // Afficher un toast de succès ici
   } catch (error) {
-    console.error('Erreur lors de la suppression du budget:', error);
     // Afficher un toast d'erreur ici
   }
 };

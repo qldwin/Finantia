@@ -15,15 +15,17 @@ export default defineEventHandler(async (event) => {
         const userId = event.context.session?.data?.user?.id;
 
         // Protection contre les userId null ou non valides
-        if (!userId) {
+        if (!user || !user.id) {
             return createError({
                 statusCode: 401,
                 message: 'Session invalide - ID utilisateur manquant'
             });
         }
 
+        const userId = user.id;
+
         try {
-            const user = await db.select({
+            const userFromDb = await db.select({
                 id: users.id,
                 email: users.email,
                 name: users.name,
@@ -32,7 +34,7 @@ export default defineEventHandler(async (event) => {
                 .from(users)
                 .where(eq(users.id, userId));
 
-            return {user};
+            return { user: userFromDb[0] };
         } catch (dbError) {
             console.error('Erreur de base de données:', dbError);
             return createError({

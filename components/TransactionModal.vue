@@ -205,13 +205,11 @@ const closeModal = () => {
 const submitForm = async () => {
   try {
     isLoading.value = true;
-    console.log('Date brute envoyée depuis le form:', form.value.date);
     const payload = {
       description: form.value.description,
       amount: Number(form.value.amount),
       type: form.value.type,
       category: form.value.category || undefined,
-      //date: new Date(form.value.date).toISOString()
       date: form.value.date ? new Date(form.value.date).toISOString() : new Date().toISOString()
     };
 
@@ -231,16 +229,13 @@ const submitForm = async () => {
         method: 'POST',
         body: payload
       });
-      console.log('Réponse API création transaction :', response);
 
       emits('transaction-added', response.transaction);
-      console.log('Émission depuis le modal :', response.transaction);
       // toast.success('Transaction ajoutée avec succès');
     }
 
     closeModal();
   } catch (error) {
-    console.error('Erreur:', error);
     // toast.error(error.data?.statusMessage || 'Erreur lors de l\'enregistrement de la transaction');
   } finally {
     isLoading.value = false;

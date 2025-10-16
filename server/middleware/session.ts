@@ -36,11 +36,9 @@ function createMinimalSession() {
       user: { id: null, name: null, email: null }
     } as SessionData,
     update: async (data: Partial<SessionData>) => {
-      console.log('Session factice mise à jour:', data);
       return Promise.resolve();
     },
     clear: async () => {
-      console.log('Session factice effacée');
       return Promise.resolve();
     }
   };
@@ -68,9 +66,8 @@ export default defineEventHandler(async (event) => {
         session.data.user.name = session.data.user.name || null;
         session.data.user.email = session.data.user.email || null;
       }
-      
+
     } catch (error) {
-      console.warn('Erreur lors de la récupération de session, création d\'une session minimale:', error);
       // Créer une session minimale en cas d'échec
       session = createMinimalSession();
     }

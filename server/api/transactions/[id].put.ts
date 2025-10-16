@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
                 amount: body.amount,
                 type: body.type,
                 category: body.category,
-                // date: body.date
+                date: body.date
             })
             .where(and(
                 eq(transactions.id, transactionId),
