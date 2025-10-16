@@ -4,63 +4,75 @@
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-50">Budgets</h1>
 
-        <button class="btn btn-outline text-sm px-3 py-1" @click="navigateTo('/dashboard')">
+        <div class="flex items-center space-x-3">
+          <button
+              class="btn btn-primary text-sm px-4 py-2 flex items-center"
+              @click="openAddBudgetModal()"
+          >
+            <svg
+xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nouvelle budget
+          </button>
+          <button class="btn btn-outline text-sm px-3 py-1" @click="navigateTo('/dashboard')">
           Retour au tableau de bord
         </button>
-      </div>
-
-      <!-- Résumé du budget -->
-      <div class="card p-6 mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-50">Budget Total - {{
-              currentPeriodLabel
-            }}</h2>
-          <button class="btn btn-primary text-sm px-3 py-1" @click="openAddBudgetModal()">
-            Nouveau budget
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">
-            <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Budget total</h3>
-            <p class="text-2xl font-bold text-neutral-900 dark:text-neutral-50">{{ formatCurrency(totalBudget) }}</p>
-          </div>
-
-          <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">
-            <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Dépenses actuelles</h3>
-            <p
-class="text-2xl font-bold"
-               :class="totalExpenses > totalBudget ? 'text-red-600 dark:text-red-400' : 'text-neutral-900 dark:text-neutral-50'">
-              {{ formatCurrency(totalExpenses) }}</p>
-          </div>
-
-          <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">
-            <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Restant</h3>
-            <p
-class="text-2xl font-bold"
-               :class="totalRest = totalBudget - totalExpenses < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
-              {{ formatCurrency(totalRest) }}</p>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300">Progression : {{
-                formatPercent(((totalExpenses / totalBudget) * 100) || 0)
-              }}</span>
-            <span class="text-sm text-neutral-600 dark:text-neutral-400">{{
-                formatCurrency(totalExpenses)
-              }} / {{ formatCurrency(totalBudget) }}</span>
-          </div>
-          <div class="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2.5">
-            <div
-                class="h-2.5 rounded-full"
-                :class="totalExpenses > totalBudget ? 'bg-red-500' : 'bg-primary-600'"
-                :style="{ width: `${formatPercent((totalExpenses / totalBudget) * 100, 100) || 0}` }"
-            />
-          </div>
         </div>
       </div>
+
+<!--      &lt;!&ndash; Résumé du budget &ndash;&gt;-->
+<!--      <div class="card p-6 mb-8">-->
+<!--        <div class="flex items-center justify-between mb-4">-->
+<!--          <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-50">Budget Total - {{-->
+<!--              currentPeriodLabel-->
+<!--            }}</h2>-->
+<!--        </div>-->
+
+<!--        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">-->
+<!--          <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">-->
+<!--            <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Budget total</h3>-->
+<!--            <p-->
+<!--class="text-2xl font-bold"-->
+<!--                :class="balance ? 'text-red-600 dark:text-red-400' : 'text-neutral-900 dark:text-neutral-50'">{{ formatCurrency(balance) || 0}}</p>-->
+<!--          </div>-->
+
+<!--          <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">-->
+<!--            <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Dépenses actuelles</h3>-->
+<!--            <p-->
+<!--class="text-2xl font-bold"-->
+<!--               :class="totalExpenses > totalBudget ? 'text-red-600 dark:text-red-400' : 'text-neutral-900 dark:text-neutral-50'">-->
+<!--              {{ formatCurrency(totalExpenses) }}</p>-->
+<!--          </div>-->
+
+<!--          <div class="card bg-white dark:bg-neutral-800 p-4 shadow-sm">-->
+<!--            <h3 class="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-1">Restant</h3>-->
+<!--            <p-->
+<!--class="text-2xl font-bold"-->
+<!--               :class="totalRest = totalBudget - totalExpenses < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">-->
+<!--              {{ formatCurrency(totalRest) }}</p>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div class="mb-3">-->
+<!--          <div class="flex items-center justify-between mb-2">-->
+<!--            <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300">Progression : {{-->
+<!--                formatPercent(((totalExpenses / totalBudget) * 100) || 0)-->
+<!--              }}</span>-->
+<!--            <span class="text-sm text-neutral-600 dark:text-neutral-400">{{-->
+<!--                formatCurrency(totalExpenses)-->
+<!--              }} / {{ formatCurrency(totalBudget) }}</span>-->
+<!--          </div>-->
+<!--          <div class="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2.5">-->
+<!--            <div-->
+<!--                class="h-2.5 rounded-full"-->
+<!--                :class="totalExpenses > totalBudget ? 'bg-red-500' : 'bg-primary-600'"-->
+<!--                :style="{ width: `${formatPercent((totalExpenses / totalBudget) * 100, 100) || 0}` }"-->
+<!--            />-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <!-- Liste des budgets par catégorie -->
       <div class="card p-6">
@@ -196,11 +208,16 @@ for="amount"
 
             <div>
               <label for="category" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Catégorie</label>
-             <select id="category" v-model="budgetForm.category" class="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors" required>
+             <select id="category" class="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors" required>
                <option value="" disabled>Sélectionner une catégorie</option>
-               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-                 {{ cat.name }}
-               </option>
+               <option value="Alimentation">Alimentation</option>
+               <option value="Shopping">Shopping</option>
+               <option value="Transport">Transport</option>
+               <option value="Loisirs">Loisirs</option>
+               <option value="Santé">Santé</option>
+               <option value="Logement">Logement</option>
+               <option value="Factures">Factures</option>
+               <option value="Autres">Autres</option>
              </select>
             </div>
 
@@ -263,7 +280,6 @@ const budgetForm = ref({
   amount: '',
   category: '',
   period: 'monthly',
-  startDate: new Date().toISOString().split('T')[0]
 });
 
 // Label pour la période actuelle

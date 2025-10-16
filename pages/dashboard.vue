@@ -57,7 +57,7 @@ xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600 dark:text-pri
 
         <button
 class="card hover:shadow-md transition-shadow flex flex-col items-center justify-center p-4 text-center"
-                @click="navigateTo('/budget')">
+                @click="openAddBudgetModal()">
           <div class="rounded-full bg-primary-100 dark:bg-primary-900/30 p-3 mb-3">
             <svg
 xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600 dark:text-primary-400" fill="none"
@@ -355,6 +355,19 @@ const confirmDeleteTransaction = (transaction) => {
 };
 
 // ==== EVENTS ====
+
+const openAddBudgetModal = () => {
+  editingBudget.value = null;
+  budgetForm.value = {
+    name: '',
+    amount: '',
+    category: '',
+    period: 'monthly',
+    startDate: new Date().toISOString().split('T')[0]
+  };
+  showBudgetModal.value = true;
+};
+
 const onTransactionAdded = (transactionArray) => {
   const transaction = transactionArray[0];
   if (!transaction) return;
