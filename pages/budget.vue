@@ -46,8 +46,8 @@ class="text-2xl font-bold"
         <div class="mb-3">
           <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300">Progression : {{
-                Math.round((totalExpenses / totalBudget) * 100) || 0
-              }}%</span>
+                formatPercent(((totalExpenses / totalBudget) * 100) || 0)
+              }}</span>
             <span class="text-sm text-neutral-600 dark:text-neutral-400">{{
                 formatCurrency(totalExpenses)
               }} / {{ formatCurrency(totalBudget) }}</span>
@@ -56,7 +56,7 @@ class="text-2xl font-bold"
             <div
                 class="h-2.5 rounded-full"
                 :class="totalExpenses > totalBudget ? 'bg-red-500' : 'bg-primary-600'"
-                :style="{ width: `${Math.min((totalExpenses / totalBudget) * 100, 100)}%` }"
+                :style="{ width: `${formatPercent((totalExpenses / totalBudget) * 100, 100) || 0}` }"
             />
           </div>
         </div>
@@ -467,6 +467,11 @@ const formatCurrency = (amount) => {
     style: 'currency',
     currency: 'EUR'
   }).format(amount);
+};
+
+const formatPercent = (value) => {
+  if (value === null) return '-';
+  return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
 };
 
 // Formater la période
