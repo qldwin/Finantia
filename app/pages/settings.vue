@@ -28,8 +28,8 @@
         <Item variant="outline" class="border-neutral-750 shadow-xl mt-6">
           <ItemContent class="flex flex-row w-full items-center justify-between">
             <div>
-              <ItemTitle>Importer des CSV</ItemTitle>
-              <ItemDescription>Configurez les paramètres pour importer vos fichiers CSV de la banque.</ItemDescription>
+              <ItemTitle>Options des CSV</ItemTitle>
+              <ItemDescription>Les options pour importer vos fichiers CSV de la banque.</ItemDescription>
             </div>
             <div>
               <ItemActions class="flex-row-reverse">
