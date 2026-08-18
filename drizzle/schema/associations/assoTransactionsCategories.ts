@@ -1,7 +1,7 @@
 import {uuid, pgTable, primaryKey} from "drizzle-orm/pg-core";
 import {relations} from "drizzle-orm";
-import {categories} from "./categories";
-import {transactions} from "./transactions";
+import {categories} from "../categories";
+import {transactions} from "../transactions";
 
 // Table assoTransactionsCategories
 export const assoTransactionsCategories = pgTable('assoTransactionsCategories', {

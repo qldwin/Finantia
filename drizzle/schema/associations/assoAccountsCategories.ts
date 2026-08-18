@@ -1,6 +1,6 @@
 import {pgTable, uuid, primaryKey} from "drizzle-orm/pg-core";
-import {accounts} from "./accounts";
-import {categories} from "./categories";
+import {accounts} from "../accounts";
+import {categories} from "../categories";
 import {relations} from "drizzle-orm";
 
 // Table AssoAccountsCategories

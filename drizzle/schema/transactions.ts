@@ -3,7 +3,7 @@ import {accounts} from './accounts';
 import {relations} from "drizzle-orm";
 import {senderRecipient} from "./senderRecipient";
 import {typeTransactionEnum} from "./typeTransactions";
-import {assoTransactionsCategories} from "./assoTransactionsCategories";
+import {assoTransactionsCategories} from "./associations/assoTransactionsCategories";
 import {users} from "./users";
 
 // Table Transactions

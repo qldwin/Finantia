@@ -3,7 +3,7 @@ import { users } from "./users";
 import { relations } from "drizzle-orm";
 import { transactions } from "./transactions";
 import {budgets} from "./budgets";
-import {assoAccountsCategories} from "./assoAccountsCategories";
+import {assoAccountsCategories} from "./associations/assoAccountsCategories";
 import {senderRecipient} from "./senderRecipient";
 
 // Table Account

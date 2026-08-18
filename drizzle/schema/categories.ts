@@ -1,8 +1,8 @@
 import { pgTable, varchar, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { assoBudgetCategories } from "./assoBudgetCategories";
-import { assoTransactionsCategories } from "./assoTransactionsCategories";
-import { assoAccountsCategories } from "./assoAccountsCategories";
+import { assoBudgetCategories } from "./associations/assoBudgetCategories";
+import { assoTransactionsCategories } from "./associations/assoTransactionsCategories";
+import { assoAccountsCategories } from "./associations/assoAccountsCategories";
 import { typeTransactionEnum } from "./typeTransactions";
 import { users } from "./users";
 

@@ -1,7 +1,7 @@
 import {pgTable, uuid, primaryKey} from "drizzle-orm/pg-core";
 import {relations} from "drizzle-orm";
-import { categories } from "./categories";
-import { budgets } from "./budgets";
+import { categories } from "../categories";
+import { budgets } from "../budgets";
 
 // Table assoBudgetCategory
 
