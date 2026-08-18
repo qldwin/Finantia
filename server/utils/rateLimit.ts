@@ -1,9 +1,27 @@
 import { useStorage } from '#imports'
+import { useRuntimeConfig } from '#imports'
 
 /**
- * Rate-limiting / lockout simple basé sur le storage Nitro (en mémoire par défaut,
- * configurable vers Redis via nitro.storage). Suffisant pour limiter le brute-force
- * sur la 2FA et l'authentification.
+ * Rate-limiting / lockout basé sur le storage Nitro.
+ *
+ * ⚠️ IMPORTANT — multi-instance :
+ * Le storage Nitro est EN MÉMOIRE par défaut. En production multi-instance
+ * (plusieurs containers/PM2 derrière un load-balancer), chaque instance
+ * possède son propre compteur → un attaquant qui répartit ses requêtes sur
+ * plusieurs instances contourne le lockout. Les compteurs sont aussi réinitialisés
+ * à chaque redémarrage de conteneur.
+ *
+ * Pour un déploiement multi-instance, configurez un driver de storage partagé
+ * pour ce namespace dans nuxt.config.js :
+ *
+ *   nitro: {
+ *     storage: {
+ *       cache: {
+ *         driver: 'redis',
+ *         url: process.env.REDIS_URL
+ *       }
+ *     }
+ *   }
  *
  * Format de clé : `rl:<scope>:<key>` (ex. `rl:2fa:<userId>`).
  */
@@ -14,8 +32,10 @@ type RateLimitState = {
     lockedUntil: number
 }
 
-const MAX_ATTEMPTS = 5
-const LOCKOUT_MS = 15 * 60 * 1000 // 15 minutes
+// Lecture des seuils depuis la config runtime (valeurs par défaut sûres).
+const config = useRuntimeConfig()
+const MAX_ATTEMPTS: number = Number(config.rateLimit?.maxAttempts) || 5
+const LOCKOUT_MS: number = (Number(config.rateLimit?.lockoutMinutes) || 15) * 60 * 1000
 
 export const checkRateLimit = async (scope: string, key: string): Promise<{ allowed: boolean; retryAfterSec: number }> => {
     const storageKey = `rl:${scope}:${key}`

@@ -1,5 +1,6 @@
 import {z} from 'zod'
 import {createBudget} from "#server/services/budgets.service";
+import {assertAccountOwnership} from "#server/utils/ownership";
 
 const createBudgetSchema = z.object({
     name: z.string({message: "Le nom est requis"})
@@ -21,6 +22,9 @@ export default defineEventHandler(async (event) => {
     }
 
     const {categoryIds, ...restBody} = body.data
+
+    // Vérifier que le compte (si fourni) appartient bien à l'utilisateur
+    await assertAccountOwnership(restBody.accountId, user.id)
 
     const budgetData = {
         ...restBody,

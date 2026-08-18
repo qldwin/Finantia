@@ -1,5 +1,6 @@
 import {z} from 'zod'
 import {updateBudget} from "#server/services/budgets.service";
+import {assertAccountOwnership} from "#server/utils/ownership";
 
 const paramsSchema = z.object({
     id: z.string().uuid({message: "ID de budget invalide"})
@@ -32,6 +33,10 @@ export default defineEventHandler(async (event) => {
     }
 
     const {categoryIds, ...restBody} = body.data
+
+    // Vérifier que le compte (si modifié) appartient bien à l'utilisateur
+    await assertAccountOwnership(restBody.accountId, user.id)
+
     const budgetData = {
         ...restBody,
         amount: restBody.amount ? String(restBody.amount) : undefined,

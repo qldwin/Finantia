@@ -6,7 +6,7 @@ const paramsSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-    await requireAuth(event);
+    const user = await requireAuth(event);
 
     const params = await getValidatedRouterParams(event, (p) => paramsSchema.safeParse(p));
     if (!params.success) {
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const category = await getCategoryById(params.data.id);
+        const category = await getCategoryById(params.data.id, user.id);
 
         if (!category) {
             throw createError({statusCode: 404, message: 'Catégorie introuvable'});

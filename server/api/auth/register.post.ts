@@ -3,7 +3,7 @@ import { registerUser } from '#server/services/auth.service'
 import { db } from '#server/db'
 import { accounts } from '~~/drizzle/schema'
 import { checkRateLimit, consumeRateLimitAttempt, resetRateLimit } from '#server/utils/rateLimit'
-import { getRequestIP } from 'h3'
+import { getClientIP } from '#server/utils/clientIP'
 
 const registerSchema = z.object({
     email: z.string().email(),
@@ -12,7 +12,7 @@ const registerSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-    const clientIP = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+    const clientIP = getClientIP(event)
 
     const rl = await checkRateLimit('register', clientIP)
     if (!rl.allowed) {
