@@ -1,15 +1,13 @@
 import { z } from 'zod'
 import { updateUserProfile } from "#server/services/user.service";
+import { requireAuth } from "#server/utils/auth";
 
 const profileSchema = z.object({
     name: z.string().min(1, "Le nom ne peut pas être vide")
 })
 
 export default defineEventHandler(async (event) => {
-    const session = await requireUserSession(event)
-    if (!session.user) {
-        throw createError({ statusCode: 401, message: "Non authentifié" })
-    }
+    const user = await requireAuth(event)
 
     const result = await readValidatedBody(event, body => profileSchema.safeParse(body))
     if (!result.success) {
@@ -22,13 +20,16 @@ export default defineEventHandler(async (event) => {
     const newName = result.data.name
 
     try {
-        await updateUserProfile(session.user.id, newName)
+        await updateUserProfile(user.id, newName)
         await setUserSession(event, {
             user: {
-                id:session.user.id,
-                email:session.user.email,
-                name:newName
+                id: user.id,
+                email: user.email,
+                name: newName,
+                authProvider: user.authProvider,
+                twoFactorEnabled: user.twoFactorEnabled
             },
+            secure: { twoFactorPending: false },
             loggedInAt: new Date()
         });
 

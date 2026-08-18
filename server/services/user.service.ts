@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "#server/db";
 import { users } from "~~/drizzle/schema";
+import { encryptText, decryptText } from "#server/utils/crypto";
 
 export const getUserByEmail = async (email: string) => {
     return await db.query.users.findFirst({
@@ -82,7 +83,7 @@ export const updateUserTwoFactor = async (
     return db.update(users)
         .set({
             twoFactorEnabled,
-            twoFactorSecret,
+            twoFactorSecret: twoFactorSecret ? encryptText(twoFactorSecret) : null,
             updatedAt: new Date()
         })
         .where(eq(users.id, userId))
@@ -96,5 +97,9 @@ export const getUserTwoFactorSecret = async (userId: string) => {
             twoFactorEnabled: true
         }
     })
-    return user
+    if (!user) return user
+    return {
+        ...user,
+        twoFactorSecret: user.twoFactorSecret ? decryptText(user.twoFactorSecret) : null
+    }
 }

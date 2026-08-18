@@ -38,7 +38,7 @@ export default defineOAuthGitHubEventHandler({
         });
 
         if (dbUser && dbUser.authProvider !== 'github') {
-            return sendRedirect(event, `/login?error=wrong_provider&expected=${dbUser.authProvider}`);
+            return sendRedirect(event, `/login?error=wrong_provider`);
         }
 
         if (!dbUser) {

@@ -1,15 +1,15 @@
 import {z} from 'zod'
 import {getUserByEmail, updateUserEmail} from '#server/services/user.service'
+import {requireAuth} from '#server/utils/auth'
+import {verifyPassword} from '#imports'
 
 const emailSchema = z.object({
-    email: z.email('Email invalide')
+    email: z.email('Email invalide'),
+    currentPassword: z.string().min(1, 'Le mot de passe actuel est requis')
 })
 
 export default defineEventHandler(async (event) => {
-    const session = await requireUserSession(event)
-    if (!session.user) {
-        throw createError({statusCode: 401, message: 'Non authentifie'})
-    }
+    const user = await requireAuth(event)
 
     const result = await readValidatedBody(event, (body) => emailSchema.safeParse(body))
     if (!result.success) {
@@ -21,20 +21,32 @@ export default defineEventHandler(async (event) => {
 
     const newEmail = result.data.email
 
+    // Re-vérification du mot de passe pour cette action sensible
+    const userInDb = await getUserByEmail(user.email)
+    if (!userInDb || !userInDb.password) {
+        throw createError({statusCode: 400, message: 'Aucun mot de passe configuré pour ce compte'})
+    }
+    if (!await verifyPassword(userInDb.password, result.data.currentPassword)) {
+        throw createError({statusCode: 403, message: 'Mot de passe actuel incorrect'})
+    }
+
     const existingUser = await getUserByEmail(newEmail)
-    if (newEmail === session.user.email || (existingUser && existingUser.id !== session.user.id)) {
+    if (newEmail === user.email || (existingUser && existingUser.id !== user.id)) {
         throw createError({statusCode: 400, message: 'Impossible de faire la modification ! Contactez le support.'})
     }
 
     try {
-        await updateUserEmail(session.user.id, newEmail)
+        await updateUserEmail(user.id, newEmail)
 
         await setUserSession(event, {
             user: {
-                id: session.user.id,
+                id: user.id,
                 email: newEmail,
-                name: session.user.name
+                name: user.name,
+                authProvider: user.authProvider,
+                twoFactorEnabled: user.twoFactorEnabled
             },
+            secure: { twoFactorPending: false },
             loggedInAt: new Date()
         })
 

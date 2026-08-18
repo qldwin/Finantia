@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { verifyTOTP } from '@oslojs/otp'
 import { decodeBase32 } from '@oslojs/encoding'
 import { getUserTwoFactorSecret } from '#server/services/user.service'
+import { checkRateLimit, consumeRateLimitAttempt, resetRateLimit } from '#server/utils/rateLimit'
 
 const schema = z.object({
     code: z.string().length(6)
@@ -25,12 +26,24 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, message: '2FA non configurée' })
     }
 
+    // Protection contre le brute-force du code TOTP
+    const rl = await checkRateLimit('2fa', session.user.id)
+    if (!rl.allowed) {
+        throw createError({ statusCode: 429, message: `Trop de tentatives. Réessayez dans ${rl.retryAfterSec}s.` })
+    }
+
     const secretBytes = decodeBase32(user.twoFactorSecret)
     const isValid = verifyTOTP(secretBytes, 30, 6, result.data.code)
 
     if (!isValid) {
-        throw createError({ statusCode: 400, message: 'Code incorrect' })
+        const result = await consumeRateLimitAttempt('2fa', session.user.id)
+        if (!result.allowed) {
+            throw createError({ statusCode: 429, message: `Trop de tentatives. Compte verrouillé ${result.retryAfterSec}s.` })
+        }
+        throw createError({ statusCode: 400, message: `Code incorrect. ${result.remaining} tentative(s) restante(s).` })
     }
+
+    await resetRateLimit('2fa', session.user.id)
 
     await setUserSession(event, {
         user: session.user,

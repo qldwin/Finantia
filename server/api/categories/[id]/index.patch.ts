@@ -12,7 +12,7 @@ const updateCategorySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-    await requireAuth(event);
+    const user = await requireAuth(event);
     const params = await getValidatedRouterParams(event, (p) => paramsSchema.safeParse(p));
     if (!params.success) throw createError({statusCode: 400, message: params.error.issues[0]?.message});
 
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const updatedCategory = await updateCategory(params.data.id, body.data);
+        const updatedCategory = await updateCategory(params.data.id, user.id, body.data);
 
         if (!updatedCategory) {
             throw createError({statusCode: 404, message: 'Catégorie introuvable'});
