@@ -1,5 +1,8 @@
 import {z} from 'zod'
+import {eq} from 'drizzle-orm'
 import {createTransaction} from "#server/services/transactions.service";
+import {db} from "#server/db";
+import {accounts} from "~~/drizzle/schema";
 
 const createTransactionSchema = z.object({
     amount: z.number({message: "Le montant est requis"})
@@ -26,6 +29,17 @@ export default defineEventHandler(async (event) => {
     }
 
     const {categoryId, ...restBody} = body.data
+
+    // Vérifier que le compte (si fourni) appartient bien à l'utilisateur
+    if (restBody.accountId) {
+        const ownedAccount = await db.query.accounts.findFirst({
+            where: eq(accounts.id, restBody.accountId)
+        })
+        if (!ownedAccount || ownedAccount.userId !== user.id) {
+            throw createError({statusCode: 403, message: 'Compte invalide ou non autorisé'})
+        }
+    }
+
     const transactionData = {
         ...restBody,
         userId: user.id,

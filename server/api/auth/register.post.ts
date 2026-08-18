@@ -2,6 +2,8 @@ import { z } from 'zod'
 import { registerUser } from '#server/services/auth.service'
 import { db } from '#server/db'
 import { accounts } from '~~/drizzle/schema'
+import { checkRateLimit, consumeRateLimitAttempt, resetRateLimit } from '#server/utils/rateLimit'
+import { getRequestIP } from 'h3'
 
 const registerSchema = z.object({
     email: z.string().email(),
@@ -10,6 +12,13 @@ const registerSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
+    const clientIP = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+
+    const rl = await checkRateLimit('register', clientIP)
+    if (!rl.allowed) {
+        throw createError({statusCode: 429, message: `Trop de tentatives. Réessayez dans ${rl.retryAfterSec}s.`})
+    }
+
     const result = await readValidatedBody(event, body => registerSchema.safeParse(body))
 
     if (!result.success) {
@@ -23,8 +32,11 @@ export default defineEventHandler(async (event) => {
     })
 
     if (!newUser) {
+        await consumeRateLimitAttempt('register', clientIP)
         throw createError({ statusCode: 400, message: 'Cet email est déjà utilisé' })
     }
+
+    await resetRateLimit('register', clientIP)
 
     try {
         await db.insert(accounts).values({

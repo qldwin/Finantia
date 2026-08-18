@@ -17,10 +17,14 @@ export const getAllCategories = async (userId: string, typeEnum?: string) => {
         .orderBy(categories.name);
 };
 
-export const getCategoryById = async (categoryId: string) => {
+export const getCategoryById = async (categoryId: string, userId?: string) => {
+    const conditions = userId
+        ? and(eq(categories.id, categoryId), or(eq(categories.userId, userId), isNull(categories.userId)))
+        : eq(categories.id, categoryId);
+
     const result = await db.select()
         .from(categories)
-        .where(eq(categories.id, categoryId))
+        .where(conditions)
         .limit(1);
     return result[0];
 }
@@ -40,12 +44,21 @@ export const createCategory = async (data: {
 
 export const updateCategory = async (
     categoryId: string,
+    userId: string,
     updateData: Partial<typeof categories.$inferInsert>
 ) => {
-    const categoryTarget = await getCategoryById(categoryId);
+    const categoryTarget = await getCategoryById(categoryId, userId);
 
     if (!categoryTarget) {
         throw createError({ statusCode: 404, message: 'Catégorie introuvable' });
+    }
+
+    // Les catégories globales (userId NULL) sont immuables hors d'un back-office admin dédié.
+    if (categoryTarget.userId === null) {
+        throw createError({
+            statusCode: 403,
+            message: 'Impossible de modifier une catégorie par défaut'
+        });
     }
 
     if (categoryTarget.isDefault === true) {
@@ -57,16 +70,23 @@ export const updateCategory = async (
 
     const [updatedCategory] = await db.update(categories)
         .set(updateData)
-        .where(eq(categories.id, categoryId))
+        .where(and(eq(categories.id, categoryId), eq(categories.userId, userId)))
         .returning();
     return updatedCategory;
 }
 
-export const deleteCategory = async (categoryId: string) => {
-    const categoryTarget = await getCategoryById(categoryId);
+export const deleteCategory = async (categoryId: string, userId: string) => {
+    const categoryTarget = await getCategoryById(categoryId, userId);
 
     if (!categoryTarget) {
         throw createError({ statusCode: 404, message: 'Catégorie introuvable' });
+    }
+
+    if (categoryTarget.userId === null) {
+        throw createError({
+            statusCode: 403,
+            message: 'Impossible de supprimer une catégorie par défaut'
+        });
     }
 
     if (categoryTarget.isDefault === true) {
@@ -77,7 +97,7 @@ export const deleteCategory = async (categoryId: string) => {
     }
 
     const [deletedCategory] = await db.delete(categories)
-        .where(eq(categories.id, categoryId))
+        .where(and(eq(categories.id, categoryId), eq(categories.userId, userId)))
         .returning();
     return deletedCategory;
 }

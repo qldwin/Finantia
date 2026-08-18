@@ -10,7 +10,7 @@ export default defineOAuthGoogleEventHandler({
         });
 
         if (dbUser && dbUser.authProvider !== 'google') {
-            return sendRedirect(event, `/login?error=wrong_provider&expected=${dbUser.authProvider}`);
+            return sendRedirect(event, `/login?error=wrong_provider`);
         }
 
         if (!dbUser) {

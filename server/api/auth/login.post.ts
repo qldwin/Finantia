@@ -1,5 +1,7 @@
 import {z} from 'zod'
 import {loginUser} from "#server/services/auth.service";
+import {checkRateLimit, consumeRateLimitAttempt, resetRateLimit} from '#server/utils/rateLimit';
+import {getRequestIP} from 'h3';
 
 const loginSchema = z.object({
     email: z.string().email(),
@@ -7,6 +9,13 @@ const loginSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
+    const clientIP = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+
+    const rl = await checkRateLimit('login', clientIP)
+    if (!rl.allowed) {
+        throw createError({statusCode: 429, message: `Trop de tentatives. Réessayez dans ${rl.retryAfterSec}s.`})
+    }
+
     const result = await readValidatedBody(event, body => loginSchema.safeParse(body))
     if (!result.success) {
         throw createError({statusCode: 400, message: 'Données invalides'})
@@ -15,8 +24,16 @@ export default defineEventHandler(async (event) => {
     const user = await loginUser(result.data.email, result.data.password)
 
     if (!user) {
-        throw createError({statusCode: 401, message: 'Email ou mot de passe incorrect'})
+        const attempt = await consumeRateLimitAttempt('login', clientIP)
+        throw createError({
+            statusCode: 401,
+            message: attempt.allowed
+                ? `Email ou mot de passe incorrect. ${attempt.remaining} tentative(s) restante(s).`
+                : `Trop de tentatives. Compte verrouillé ${attempt.retryAfterSec}s.`
+        })
     }
+
+    await resetRateLimit('login', clientIP)
 
     if (user.twoFactorEnabled) {
         await setUserSession(event, {

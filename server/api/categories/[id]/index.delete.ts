@@ -6,13 +6,13 @@ const paramsSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-    await requireAuth(event);
+    const user = await requireAuth(event);
 
     const params = await getValidatedRouterParams(event, (p) => paramsSchema.safeParse(p));
     if (!params.success) throw createError({statusCode: 400, message: 'ID invalide'});
 
     try {
-        const deletedCategory = await deleteCategory(params.data.id);
+        const deletedCategory = await deleteCategory(params.data.id, user.id);
 
         return {
             success: true,
