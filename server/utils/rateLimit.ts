@@ -29,6 +29,12 @@ import { useStorage, useRuntimeConfig } from '#imports'
  * Un scope peut surcharger ces seuils via le 4e argument (ex. 'login-email'
  * est plus permissif : 15 tentatives pour éviter qu'un attaquant ne verrouille
  * volontairement le compte d'une victime ciblée — DoS account-lockout).
+ *
+ * ⚠️ Vecteur résiduel assumé : un lockout dur par identifiant reste exploitable
+ * pour un DoS ciblé (un compte reste verrouillable indéfiniment, 15 échecs toutes
+ * les 15 min en boucle). Pour éliminer ce vecteur sans réintroduire le risque de
+ * credential stuffing, envisager à terme : un CAPTCHA après N échecs, ou un
+ * ralentissement progressif (délai croissant) sans blocage complet.
  */
 const storage = useStorage('cache')
 
@@ -40,7 +46,7 @@ type RateLimitState = {
 /**
  * Lit la config au moment de l'appel (contexte de requête), pas à l'import.
  */
-const getThresholds = (scope: string, maxAttemptsOverride?: number) => {
+const getThresholds = (maxAttemptsOverride?: number) => {
     const config = useRuntimeConfig()
     const defaultMax: number = Number(config.rateLimit?.maxAttempts) || 5
     const lockoutMs: number = (Number(config.rateLimit?.lockoutMinutes) || 15) * 60 * 1000
@@ -50,7 +56,7 @@ const getThresholds = (scope: string, maxAttemptsOverride?: number) => {
     }
 }
 
-export const checkRateLimit = async (scope: string, key: string, maxAttemptsOverride?: number): Promise<{ allowed: boolean; retryAfterSec: number }> => {
+export const checkRateLimit = async (scope: string, key: string): Promise<{ allowed: boolean; retryAfterSec: number }> => {
     const storageKey = `rl:${scope}:${key}`
     const now = Date.now()
     const state = (await storage.getItem<RateLimitState>(storageKey)) ?? { attempts: 0, lockedUntil: 0 }
@@ -71,7 +77,7 @@ export const consumeRateLimitAttempt = async (scope: string, key: string, maxAtt
         return { allowed: false, retryAfterSec: Math.ceil((state.lockedUntil - now) / 1000), remaining: 0 }
     }
 
-    const { maxAttempts, lockoutMs } = getThresholds(scope, maxAttemptsOverride)
+    const { maxAttempts, lockoutMs } = getThresholds(maxAttemptsOverride)
 
     state.attempts += 1
     let remaining = maxAttempts - state.attempts

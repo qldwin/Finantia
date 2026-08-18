@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     // pour limiter le DoS par verrouillage volontaire d'un compte ciblé.
     const emailKey = result.data.email.toLowerCase()
     const EMAIL_MAX_ATTEMPTS = 15
-    const rlEmail = await checkRateLimit('login-email', emailKey, EMAIL_MAX_ATTEMPTS)
+    const rlEmail = await checkRateLimit('login-email', emailKey)
     if (!rlEmail.allowed) {
         throw createError({statusCode: 429, message: `Trop de tentatives sur ce compte. Réessayez dans ${rlEmail.retryAfterSec}s.`})
     }
