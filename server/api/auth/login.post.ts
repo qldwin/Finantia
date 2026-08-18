@@ -23,9 +23,11 @@ export default defineEventHandler(async (event) => {
     }
 
     // Rate-limit par email (anti credential stuffing distribué : 1 essai/IP mais
-    // des dizaines d'IP sur le même compte cible).
+    // des dizaines d'IP sur le même compte cible). Seuil plus élevé (15) que l'IP
+    // pour limiter le DoS par verrouillage volontaire d'un compte ciblé.
     const emailKey = result.data.email.toLowerCase()
-    const rlEmail = await checkRateLimit('login-email', emailKey)
+    const EMAIL_MAX_ATTEMPTS = 15
+    const rlEmail = await checkRateLimit('login-email', emailKey, EMAIL_MAX_ATTEMPTS)
     if (!rlEmail.allowed) {
         throw createError({statusCode: 429, message: `Trop de tentatives sur ce compte. Réessayez dans ${rlEmail.retryAfterSec}s.`})
     }
@@ -34,7 +36,7 @@ export default defineEventHandler(async (event) => {
 
     if (!user) {
         const attempt = await consumeRateLimitAttempt('login', clientIP)
-        await consumeRateLimitAttempt('login-email', emailKey)
+        await consumeRateLimitAttempt('login-email', emailKey, EMAIL_MAX_ATTEMPTS)
         throw createError({
             statusCode: 401,
             message: attempt.allowed

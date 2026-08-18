@@ -1,5 +1,4 @@
-import { useStorage } from '#imports'
-import { useRuntimeConfig } from '#imports'
+import { useStorage, useRuntimeConfig } from '#imports'
 
 /**
  * Rate-limiting / lockout basé sur le storage Nitro.
@@ -24,6 +23,12 @@ import { useRuntimeConfig } from '#imports'
  *   }
  *
  * Format de clé : `rl:<scope>:<key>` (ex. `rl:2fa:<userId>`).
+ *
+ * Seuils : par défaut 5 tentatives / 15 min de lockout, configurables via
+ * runtimeConfig (RATE_LIMIT_MAX_ATTEMPTS / RATE_LIMIT_LOCKOUT_MINUTES).
+ * Un scope peut surcharger ces seuils via le 4e argument (ex. 'login-email'
+ * est plus permissif : 15 tentatives pour éviter qu'un attaquant ne verrouille
+ * volontairement le compte d'une victime ciblée — DoS account-lockout).
  */
 const storage = useStorage('cache')
 
@@ -32,12 +37,20 @@ type RateLimitState = {
     lockedUntil: number
 }
 
-// Lecture des seuils depuis la config runtime (valeurs par défaut sûres).
-const config = useRuntimeConfig()
-const MAX_ATTEMPTS: number = Number(config.rateLimit?.maxAttempts) || 5
-const LOCKOUT_MS: number = (Number(config.rateLimit?.lockoutMinutes) || 15) * 60 * 1000
+/**
+ * Lit la config au moment de l'appel (contexte de requête), pas à l'import.
+ */
+const getThresholds = (scope: string, maxAttemptsOverride?: number) => {
+    const config = useRuntimeConfig()
+    const defaultMax: number = Number(config.rateLimit?.maxAttempts) || 5
+    const lockoutMs: number = (Number(config.rateLimit?.lockoutMinutes) || 15) * 60 * 1000
+    return {
+        maxAttempts: maxAttemptsOverride ?? defaultMax,
+        lockoutMs
+    }
+}
 
-export const checkRateLimit = async (scope: string, key: string): Promise<{ allowed: boolean; retryAfterSec: number }> => {
+export const checkRateLimit = async (scope: string, key: string, maxAttemptsOverride?: number): Promise<{ allowed: boolean; retryAfterSec: number }> => {
     const storageKey = `rl:${scope}:${key}`
     const now = Date.now()
     const state = (await storage.getItem<RateLimitState>(storageKey)) ?? { attempts: 0, lockedUntil: 0 }
@@ -49,7 +62,7 @@ export const checkRateLimit = async (scope: string, key: string): Promise<{ allo
     return { allowed: true, retryAfterSec: 0 }
 }
 
-export const consumeRateLimitAttempt = async (scope: string, key: string): Promise<{ allowed: boolean; retryAfterSec: number; remaining: number }> => {
+export const consumeRateLimitAttempt = async (scope: string, key: string, maxAttemptsOverride?: number): Promise<{ allowed: boolean; retryAfterSec: number; remaining: number }> => {
     const storageKey = `rl:${scope}:${key}`
     const now = Date.now()
     const state = (await storage.getItem<RateLimitState>(storageKey)) ?? { attempts: 0, lockedUntil: 0 }
@@ -58,18 +71,20 @@ export const consumeRateLimitAttempt = async (scope: string, key: string): Promi
         return { allowed: false, retryAfterSec: Math.ceil((state.lockedUntil - now) / 1000), remaining: 0 }
     }
 
-    state.attempts += 1
-    let remaining = MAX_ATTEMPTS - state.attempts
+    const { maxAttempts, lockoutMs } = getThresholds(scope, maxAttemptsOverride)
 
-    if (state.attempts >= MAX_ATTEMPTS) {
-        state.lockedUntil = now + LOCKOUT_MS
+    state.attempts += 1
+    let remaining = maxAttempts - state.attempts
+
+    if (state.attempts >= maxAttempts) {
+        state.lockedUntil = now + lockoutMs
         state.attempts = 0
         remaining = 0
     }
 
     await storage.setItem(storageKey, state)
 
-    return { allowed: remaining > 0, retryAfterSec: remaining === 0 ? Math.ceil(LOCKOUT_MS / 1000) : 0, remaining }
+    return { allowed: remaining > 0, retryAfterSec: remaining === 0 ? Math.ceil(lockoutMs / 1000) : 0, remaining }
 }
 
 export const resetRateLimit = async (scope: string, key: string): Promise<void> => {

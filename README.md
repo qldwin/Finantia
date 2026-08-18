@@ -147,11 +147,47 @@ npx drizzle-kit studio
 
 ## 🔒 Sécurité
 
-- Authentification utilisateur
-- Validation des entrées côté serveur
-- Protection CSRF
-- Sessions sécurisées
-- Cryptage des données (protocole AES-GCM 256)
+- Authentification utilisateur + 2FA (TOTP, secret chiffré en base)
+- Validation des entrées côté serveur (Zod)
+- Sessions sécurisées (secret de session validé au démarrage)
+- Chiffrement des données sensibles (AES-256-GCM : descriptions, secret 2FA)
+- Rate-limiting / lockout sur l'authentification et la 2FA
+- Isolation des données par utilisateur (anti-IDOR)
+
+### ⚠️ Configuration déploiement importante (derrière un reverse proxy)
+
+L'application est conteneurisée et tourne généralement derrière un reverse proxy
+(nginx, Traefik, Caddy...). La variable **`TRUST_PROXY_HEADERS`** contrôle la lecture
+de l'IP client pour le rate-limiting :
+
+- **`TRUST_PROXY_HEADERS=true`** — à n'activer **QUE** si votre reverse proxy
+  **strip** le `X-Forwarded-For` entrant avant de poser le sien. Sans cela, un
+  attaquant peut forger cet en-tête et contourner le rate-limit.
+- **`TRUST_PROXY_HEADERS=false`** (défaut) — l'IP lue est celle du socket. **Derrière
+  un proxy**, tous les utilisateurs apparaissent avec la même IP → le rate-limit
+  login verrouille l'application après 5 tentatives échouées cumulées
+  (déni de service auto-infligé). Le serveur log un warning au démarrage en
+  production si la variable n'est pas définie.
+
+**En production derrière un proxy de confiance** : configurez le proxy pour strip
+le XFF entrant, puis passez `TRUST_PROXY_HEADERS=true`.
+
+### Rate-limiting en multi-instance
+
+Le rate-limit utilise le storage Nitro (**en mémoire par défaut**). En
+multi-instance (plusieurs containers/PM2), chaque instance a son propre compteur :
+un attaquant qui répartit ses requêtes contourne le lockout. Configurez un driver
+partagé (Redis) pour le namespace `cache` dans `nuxt.config.js` :
+
+```js
+nitro: {
+  storage: {
+    cache: { driver: 'redis', url: process.env.REDIS_URL }
+  }
+}
+```
+
+Seuils configurables via `RATE_LIMIT_MAX_ATTEMPTS` et `RATE_LIMIT_LOCKOUT_MINUTES`.
 
 ## 📱 Responsive Design
 
