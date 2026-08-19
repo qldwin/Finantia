@@ -46,6 +46,28 @@
 
         <!-- Modal d'importation CSV -->
         <CsvImportModal :is-open="csvImportModalOpen" @update:isOpen="setCsvImportModalOpen"/>
+
+        <!-- Gestion des Comptes Bancaires -->
+        <Item variant="outline" class="border-neutral-750 shadow-xl mt-6">
+          <ItemContent class="flex flex-row w-full items-center justify-between">
+            <div>
+              <ItemTitle>Gestion des Comptes Bancaires</ItemTitle>
+              <ItemDescription>Ajoutez, supprimez ou modifiez vos comptes bancaires.</ItemDescription>
+            </div>
+            <div>
+              <ItemActions class="flex-row-reverse">
+                <Button variant="outline" size="sm" class="cursor-pointer text-white border-neutral-200 dark:border-neutral-750 bg-primary-700 hover:bg-primary-500"
+                        @click="openAccountModal"
+                >
+                  Gérer les comptes bancaires
+                </Button>
+              </ItemActions>
+            </div>
+          </ItemContent>
+        </Item>
+
+        <!-- Modal de gestion des Comptes Bancaires -->
+        <AccountManagementModal :is-open="accountModalOpen" @update:isOpen="setAccountModalOpen"/>
       </div>
     </div>
   </div>
@@ -54,9 +76,11 @@
 <script setup>
 import { ref } from 'vue';
 import CsvImportModal from '~/components/CsvImportModal.vue';
+import AccountManagementModal from '~/components/AccountManagementModal.vue';
 
 // --- STATE ---
 const csvImportModalOpen = ref(false);
+const accountModalOpen = ref(false);
 
 // --- ACTIONS ---
 const openCsvImportModal = () => {
@@ -65,5 +89,13 @@ const openCsvImportModal = () => {
 
 const setCsvImportModalOpen = (value) => {
   csvImportModalOpen.value = value;
+};
+
+const openAccountModal = () => {
+  accountModalOpen.value = true;
+};
+
+const setAccountModalOpen = (value) => {
+  accountModalOpen.value = value;
 };
 </script>

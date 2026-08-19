@@ -5,13 +5,14 @@ import { transactions } from "./transactions";
 import {budgets} from "./budgets";
 import {assoAccountsCategories} from "./associations/assoAccountsCategories";
 import {senderRecipient} from "./senderRecipient";
+import {typeAccountEnum} from "./accountType";
 
 // Table Account
 export const accounts = pgTable('accounts', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     userId: uuid('userId').references(() => users.id).notNull(),
     accountName: varchar('accountName', {length: 255}).notNull(),
-    accountType: varchar('accountType', {length: 255}).notNull(),
+    typeAccount: typeAccountEnum().notNull(),
     balance: decimal('balance', {precision: 15, scale: 3}).notNull(),
     currency: varchar('currency', {length: 3}).notNull(),
     createdAt: timestamp('createdAt').notNull().defaultNow(),
