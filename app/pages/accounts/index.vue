@@ -9,13 +9,25 @@
           </p>
         </div>
 
-        <Button
-            class="cursor-pointer text-white border-neutral-200 dark:border-neutral-750 bg-primary-700 hover:bg-primary-500"
-            @click="openAccountModal"
-        >
-          <PlusIcon class="h-4 w-4 stroke-[3]"/>
-          <span class="hidden sm:inline">Nouveau compte</span>
-        </Button>
+        <div class="flex gap-4">
+          <Button
+              class="cursor-pointer text-white border-neutral-200 dark:border-neutral-750 bg-primary-700 hover:bg-primary-500"
+              @click="openAccountModal"
+          >
+            <PlusIcon class="h-4 w-4 stroke-[3]"/>
+            <span class="hidden sm:inline">Nouveau compte</span>
+          </Button>
+          
+          <Button
+              v-if="accounts.length > 1"
+              variant="outline"
+              class="border-primary-200 dark:border-primary-800"
+              @click="openTransferModal"
+          >
+            <ArrowLeftRight class="h-4 w-4 mr-2" />
+            <span class="hidden sm:inline">Transfert</span>
+          </Button>
+        </div>
       </div>
 
       <!-- Account Summary Cards -->
@@ -38,22 +50,76 @@
           <h3 class="text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
             Solde total
           </h3>
+          <AccountBalance
+              :balance="totalBalance"
+              :loading="loading"
+              size="md"
+          />
+        </div>
+
+        <div
+            class="card p-6 rounded-lg shadow-xl border border-neutral-200 dark:border-neutral-750 bg-white dark:bg-neutral-900"
+        >
+          <h3 class="text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+            Revenus (ce mois)
+          </h3>
           <div v-if="loading" class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"/>
           <p v-else class="text-3xl font-bold text-primary-550">
-            {{ formatCurrency(totalBalance) }}
+            {{ formatCurrency(monthlyIncome) }}
+          </p>
+        </div>
+
+        <div
+            class="card p-6 rounded-lg shadow-xl border border-neutral-200 dark:border-neutral-750 bg-white dark:bg-neutral-900"
+        >
+          <h3 class="text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+            Dépenses (ce mois)
+          </h3>
+          <div v-if="loading" class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"/>
+          <p v-else class="text-3xl font-bold text-red-500">
+            {{ formatCurrency(monthlyExpense) }}
           </p>
         </div>
       </div>
 
-      <!-- Accounts List -->
-      <div class="bg-white dark:bg-neutral-800 shadow-sm rounded-lg border border-neutral-200 dark:border-neutral-700">
-        <div v-if="loading" class="flex justify-center py-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"/>
+      <!-- Accounts Grid -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Mes comptes</h2>
+        
+        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="n in 3" :key="n" class="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
         </div>
 
         <div v-else-if="accounts.length === 0" class="py-8 text-center text-neutral-500">
           <p>Aucun compte bancaire enregistré.</p>
           <p class="text-sm mt-2">Commencez par ajouter votre premier compte.</p>
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AccountCard
+              v-for="account in accounts"
+              :key="account.id"
+              :account="account"
+              :transactions="allTransactions"
+              clickable
+              show-stats
+              show-footer
+              @click="viewAccount(account)"
+              @view="viewAccount(account)"
+              @edit="editAccount(account)"
+              @delete="confirmDeleteAccount(account)"
+          />
+        </div>
+      </div>
+
+      <!-- Accounts Table (Alternative View) -->
+      <div class="bg-white dark:bg-neutral-800 shadow-sm rounded-lg border border-neutral-200 dark:border-neutral-700">
+        <div class="p-6 border-b border-neutral-200 dark:border-neutral-700">
+          <h2 class="text-xl font-semibold">Liste détaillée</h2>
+        </div>
+
+        <div v-if="loading" class="flex justify-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"/>
         </div>
 
         <div v-else class="overflow-x-auto">
@@ -122,9 +188,9 @@
 
                 <TableCell class="py-3 px-4 text-sm text-right font-medium">
                   <span
-                      :class="account.currentBalance >= 0 ? 'text-primary-550' : 'text-red-500'"
+                      :class="getAccountBalance(account) >= 0 ? 'text-primary-550' : 'text-red-500'"
                   >
-                    {{ formatCurrency(account.currentBalance || parseFloat(account.balance)) }}
+                    {{ formatCurrency(getAccountBalance(account)) }}
                   </span>
                 </TableCell>
 
@@ -170,6 +236,12 @@
         :account="selectedAccount"
         @account-saved="onAccountSaved"
     />
+
+    <!-- Transfer Modal -->
+    <AccountTransferModal
+        v-model="showTransferModal"
+        @transfer-completed="onTransferCompleted"
+    />
   </div>
 </template>
 
@@ -180,7 +252,8 @@ import {
   TrashIcon,
   SquarePen,
   EyeIcon,
-  Banknote
+  Banknote,
+  ArrowLeftRight
 } from 'lucide-vue-next'
 
 useHead({
@@ -192,25 +265,33 @@ definePageMeta({
 })
 
 const accounts = ref([])
+const allTransactions = ref([])
 const loading = ref(true)
 const showAccountModal = ref(false)
+const showTransferModal = ref(false)
 const selectedAccount = ref(null)
 
-// Load accounts
-const loadAccounts = async () => {
+// Load data
+const loadData = async () => {
   try {
     loading.value = true
-    const response = await $fetch('/api/accounts')
-    accounts.value = response.accounts || []
+    
+    // Load accounts
+    const accountsResponse = await $fetch('/api/accounts')
+    accounts.value = accountsResponse.accounts || []
+    
+    // Load transactions
+    const transactionsResponse = await $fetch('/api/transactions')
+    allTransactions.value = transactionsResponse.transactions || []
   } catch (error) {
-    console.error('Erreur chargement comptes:', error)
-    alert('Erreur lors du chargement des comptes')
+    console.error('Erreur chargement données:', error)
+    alert('Erreur lors du chargement des données')
   } finally {
     loading.value = false
   }
 }
 
-// Total balance across all accounts
+// Computed properties
 const totalBalance = computed(() => {
   return accounts.value.reduce((sum, account) => {
     const balance = parseFloat(account.balance) || 0
@@ -218,6 +299,37 @@ const totalBalance = computed(() => {
     return sum + currentBalance
   }, 0)
 })
+
+const now = new Date()
+const currentMonth = now.getMonth()
+const currentYear = now.getFullYear()
+
+const monthlyIncome = computed(() => {
+  return allTransactions.value
+      .filter(t => t.typeTransaction === 'revenu' && 
+          new Date(t.date).getMonth() === currentMonth && 
+          new Date(t.date).getFullYear() === currentYear)
+      .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0)
+})
+
+const monthlyExpense = computed(() => {
+  return allTransactions.value
+      .filter(t => t.typeTransaction === 'depense' && 
+          new Date(t.date).getMonth() === currentMonth && 
+          new Date(t.date).getFullYear() === currentYear)
+      .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0)
+})
+
+const getAccountBalance = (account) => {
+  if (!account) return 0
+  const initialBalance = parseFloat(account.balance) || 0
+  const accountTransactions = allTransactions.value.filter(t => t.accountId === account.id)
+  const transactionsBalance = accountTransactions.reduce((sum, t) => {
+    const amount = parseFloat(t.amount) || 0
+    return sum + (t.typeTransaction === 'revenu' ? amount : -amount)
+  }, 0)
+  return initialBalance + transactionsBalance
+}
 
 // Helper functions
 const formatCurrency = (amount) => {
@@ -246,6 +358,10 @@ const openAccountModal = () => {
   showAccountModal.value = true
 }
 
+const openTransferModal = () => {
+  showTransferModal.value = true
+}
+
 const editAccount = (account) => {
   selectedAccount.value = { ...account }
   showAccountModal.value = true
@@ -256,8 +372,13 @@ const viewAccount = (account) => {
 }
 
 const onAccountSaved = () => {
-  loadAccounts()
+  loadData()
   showAccountModal.value = false
+}
+
+const onTransferCompleted = () => {
+  loadData()
+  showTransferModal.value = false
 }
 
 // Delete account
@@ -276,6 +397,6 @@ const confirmDeleteAccount = async (account) => {
 }
 
 onMounted(() => {
-  loadAccounts()
+  loadData()
 })
 </script>

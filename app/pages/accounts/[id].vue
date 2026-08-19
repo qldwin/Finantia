@@ -39,10 +39,12 @@
           <h3 class="text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
             Solde actuel
           </h3>
-          <div v-if="loading" class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"/>
-          <p v-else class="text-3xl font-bold" :class="currentBalance >= 0 ? 'text-primary-550' : 'text-red-500'">
-            {{ formatCurrency(currentBalance) }}
-          </p>
+          <AccountBalance
+              :balance="currentBalance"
+              :initial-balance="parseFloat(account?.balance || 0)"
+              :loading="loading"
+              size="md"
+          />
         </div>
 
         <div
@@ -61,7 +63,7 @@
             class="card p-6 rounded-lg shadow-xl border border-neutral-200 dark:border-neutral-750 bg-white dark:bg-neutral-900"
         >
           <h3 class="text-lg font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-            Dépenses (ce mois)
+            Depenses (ce mois)
           </h3>
           <div v-if="loading" class="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"/>
           <p v-else class="text-3xl font-bold text-red-500">
@@ -85,6 +87,14 @@
         >
           <SquarePen class="h-4 w-4 mr-2"/>
           Modifier le compte
+        </Button>
+        <Button
+            v-if="allAccounts.length > 1"
+            variant="outline"
+            @click="openTransferModal"
+        >
+          <ArrowLeftRight class="h-4 w-4 mr-2"/>
+          Transfert
         </Button>
         <Button
             variant="outline"
@@ -129,7 +139,7 @@
                 <TableHead
                     class="text-right py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold"
                 >
-                  Catégorie
+                  Categorie
                 </TableHead>
                 <TableHead
                     class="text-right py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold"
@@ -217,6 +227,12 @@
           :account="account"
           @account-saved="onAccountSaved"
       />
+
+      <!-- Transfer Modal -->
+      <AccountTransferModal
+          v-model="showTransferModal"
+          @transfer-completed="onTransferCompleted"
+      />
     </div>
   </div>
 </template>
@@ -227,11 +243,12 @@ import {
   ArrowLeft,
   PlusIcon,
   TrashIcon,
-  SquarePen
+  SquarePen,
+  ArrowLeftRight
 } from 'lucide-vue-next'
 
 useHead({
-  title: 'AirGap | Détails du compte',
+  title: 'AirGap | Details du compte',
 })
 
 definePageMeta({
@@ -242,10 +259,12 @@ const route = useRoute()
 const accountId = computed(() => route.params.id)
 
 const account = ref(null)
+const allAccounts = ref([])
 const transactions = ref([])
 const loading = ref(true)
 const showTransactionModal = ref(false)
 const showAccountModal = ref(false)
+const showTransferModal = ref(false)
 const selectedTransaction = ref(null)
 
 // Load data
@@ -268,10 +287,19 @@ const loadData = async () => {
           typeTransaction: t.typeTransaction
         }))
   } catch (error) {
-    console.error('Erreur chargement données:', error)
-    alert('Erreur lors du chargement des données')
+    console.error('Erreur chargement donnees:', error)
+    alert('Erreur lors du chargement des donnees')
   } finally {
     loading.value = false
+  }
+}
+
+const loadAllAccounts = async () => {
+  try {
+    const response = await $fetch('/api/accounts')
+    allAccounts.value = response.accounts || []
+  } catch (error) {
+    console.error('Erreur chargement comptes:', error)
   }
 }
 
@@ -351,6 +379,10 @@ const openTransactionModal = () => {
   showTransactionModal.value = true
 }
 
+const openTransferModal = () => {
+  showTransferModal.value = true
+}
+
 const editTransaction = (transaction) => {
   selectedTransaction.value = { ...transaction }
   showTransactionModal.value = true
@@ -370,6 +402,11 @@ const onAccountSaved = (updatedAccount) => {
   showAccountModal.value = false
 }
 
+const onTransferCompleted = () => {
+  loadData()
+  showTransferModal.value = false
+}
+
 // Delete functions
 const confirmDeleteTransaction = async (transaction) => {
   if (confirm(`Supprimer "${transaction.description}" ?`)) {
@@ -384,7 +421,7 @@ const confirmDeleteTransaction = async (transaction) => {
 }
 
 const confirmDeleteAccount = async () => {
-  if (confirm(`Voulez-vous vraiment supprimer le compte "${account.value?.accountName}" ? Cette action est irréversible.`)) {
+  if (confirm(`Voulez-vous vraiment supprimer le compte "${account.value?.accountName}" ? Cette action est irreversible.`)) {
     try {
       await $fetch(`/api/accounts/${accountId.value}`, { method: 'DELETE' })
       navigateTo('/accounts')
@@ -396,7 +433,8 @@ const confirmDeleteAccount = async () => {
   }
 }
 
-onMounted(() => {
-  loadData()
+onMounted(async () => {
+  await loadData()
+  await loadAllAccounts()
 })
 </script>
