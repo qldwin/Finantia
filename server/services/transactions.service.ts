@@ -127,7 +127,7 @@ export const updateTransaction = async (
 export const getUserTransactions = async (userId: string) => {
     const rows = await db.select({
         id: transactions.id,
-        amount: transactions.amount,
+        accountId: transactions.accountId,
         description: transactions.description,
         date: transactions.date,
         typeTransaction: transactions.typeTransaction,

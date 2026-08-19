@@ -11,6 +11,31 @@
 
       <form class="space-y-4" @submit.prevent="submitForm">
         <CardContent>
+          <!-- Account Selection -->
+          <Field v-if="!props.accountId">
+            <FieldLabel for="accountId" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              Compte bancaire *
+            </FieldLabel>
+            <Select v-model="form.accountId" required :disabled="isLoadingAccounts">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Sélectionnez un compte" />
+              </SelectTrigger>
+              <SelectContent class="dark:bg-neutral-700 bg-white">
+                <SelectItem 
+                    v-for="acc in userAccounts" 
+                    :key="acc.id" 
+                    :value="acc.id"
+                    class="hover:dark:bg-neutral-800 hover:bg-neutral-400 cursor-pointer"
+                >
+                  {{ acc.accountName }} ({{ acc.accountType }})
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p v-if="!form.accountId && !isEditing" class="text-xs text-red-500 mt-1">
+              Le compte est requis
+            </p>
+          </Field>
+
           <Field>
             <FieldLabel for="description" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Description
@@ -38,7 +63,7 @@
                   placeholder="0.00"
                   required
               />
-              <span class="absolute right-10 top-1/2 transform -translate-y-1/2 text-neutral-500">€</span>
+              <span class="absolute right-10 top-1/2 transform -translate-y-1/2 text-neutral-500"></span>
             </div>
           </Field>
           <Field>
@@ -56,13 +81,13 @@
                     value="expense"
                     class="mr-2"
                 />
-                <Label for="expense-menu" class="text-red-500 font-medium">Dépense</Label>
+                <Label for="expense-menu" class="text-red-500 font-medium">Depense</Label>
               </div>
             </RadioGroup>
           </Field>
           <Field class="mb-3">
             <FieldLabel for="category"
-                        class="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Catégorie
+                        class="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Catgorie
             </FieldLabel>
             <Select
                 v-model="form.categoryId"
@@ -73,7 +98,7 @@
                   :disabled="isLoadingCategories"
                   required
               >
-                <SelectValue placeholder="Sélectionnez une catégorie"/>
+                <SelectValue placeholder="Slectionnez une catgorie"/>
               </SelectTrigger>
               <SelectContent class="dark:bg-neutral-700 bg-white">
                 <SelectItem class="hover:dark:bg-neutral-800 hover:bg-neutral-400 cursor-pointer" v-for="cat in filteredCategories" :key="cat.id" :value="cat.id.toString()">
@@ -83,7 +108,7 @@
             </Select>
 
             <p v-if="filteredCategories.length === 0 && !isLoadingCategories" class="text-xs text-orange-500 mt-1">
-              Aucune catégorie trouvée pour ce type.
+              Aucune catgorie trouve pour ce type.
             </p>
           </Field>
 
@@ -98,7 +123,7 @@
         )"
                 >
                   <CalendarIcon class="mr-2 h-4 w-4"/>
-                  {{ form.date ? form.date.toString() : "Sélectionnez une date" }}
+                  {{ form.date ? form.date.toString() : "Slectionnez une date" }}
                 </Button>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0 dark:bg-neutral-700 bg-white" align="start">
@@ -144,6 +169,10 @@ const props = defineProps({
   transaction: {
     type: Object,
     default: null
+  },
+  accountId: {
+    type: String,
+    default: null
   }
 });
 const emits = defineEmits(['update:modelValue', 'transaction-added', 'transaction-updated']);
@@ -151,7 +180,9 @@ const emits = defineEmits(['update:modelValue', 'transaction-added', 'transactio
 // --- STATE ---
 const isLoading = ref(false);
 const isLoadingCategories = ref(true);
+const isLoadingAccounts = ref(true);
 const allCategories = ref([]);
+const userAccounts = ref([]);
 const isOpen = computed({
   get: () => props.modelValue,
   set: (value) => emits('update:modelValue', value)
@@ -164,18 +195,31 @@ const form = ref({
   type: '',
   categoryId: null,
   date: undefined,
+  accountId: null
 });
 
-// --- API : CHARGEMENT CATÉGORIES ---
+// --- API : CHARGEMENT ---
 onMounted(async () => {
   try {
+    // Load categories
     isLoadingCategories.value = true;
-    const response = await $fetch('/api/categories');
-    allCategories.value = response.categories || [];
+    const categoriesResponse = await $fetch('/api/categories');
+    allCategories.value = categoriesResponse.categories || [];
+    
+    // Load accounts
+    isLoadingAccounts.value = true;
+    const accountsResponse = await $fetch('/api/accounts');
+    userAccounts.value = accountsResponse.accounts || [];
+    
+    // If accountId is provided as prop, set it as default
+    if (props.accountId) {
+      form.value.accountId = props.accountId;
+    }
   } catch (e) {
-    console.error("Erreur lors du chargement des catégories:", e);
+    console.error("Erreur lors du chargement:", e);
   } finally {
     isLoadingCategories.value = false;
+    isLoadingAccounts.value = false;
   }
 });
 
@@ -214,28 +258,34 @@ watch(
           amount: newTransaction.amount,
           type: formType,
           categoryId: newTransaction.categoryId || null,
-          date: formattedDate
+          date: formattedDate,
+          accountId: newTransaction.accountId || props.accountId || null
         };
       }
     },
-    {immediate: true}
+    { immediate: true }
 );
 
 // --- SUBMIT ---
 const submitForm = async () => {
 
   if (!form.value.date) {
-    alert("Attention la date n'est pas sélectionnée.");
+    alert("Attention la date n'est pas s\u00e9lectionn\u00e9e.");
     return;
   }
 
   if (!form.value.categoryId) {
-    alert("Attention la catégorie n'est pas sélectionnée.");
+    alert("Attention la cat\u00e9gorie n'est pas s\u00e9lectionn\u00e9e.");
     return;
   }
 
   if (!form.value.type) {
-    alert("Attention le type n'est pas sélectionné.");
+    alert("Attention le type n'est pas s\u00e9lectionn\u00e9.");
+    return;
+  }
+
+  if (!form.value.accountId) {
+    alert("Attention le compte n'est pas s\u00e9lectionn\u00e9.");
     return;
   }
 
@@ -250,7 +300,7 @@ const submitForm = async () => {
       date: form.value.date ? form.value.date.toString() : undefined,
       typeTransaction: typeFormat,
       categoryId: form.value.categoryId,
-      accountId: null
+      accountId: form.value.accountId
     };
 
     let response;
