@@ -1,8 +1,4 @@
 export default defineNuxtConfig({
-    routes: [
-        { method: 'POST', path: '/api/account', handler: '~/server/api/account/post.ts' },
-        { method: 'POST', path: '/api/transactions/create', handler: '~/server/api/transactions/create.post.ts' }
-    ],
     compatibilityDate: "2026-03-05",
     devtools: {enabled: true},
     css: ["~/assets/css/styles.css"],

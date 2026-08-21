@@ -14,6 +14,7 @@
                 id="name"
                 v-model="form.name"
                 type="text"
+                aria-label="Nom de la catégorie"
                 class="w-full px-3 py-2 dark:border-button-1 focus:outline-none focus:ring-1 focus:ring-button-3 transition-colors"
                 placeholder="Ex: Alimentation"
                 required
@@ -21,7 +22,7 @@
           </Field>
           <Field class="mt-3">
             <FieldLabel>Type de catégorie</FieldLabel>
-            <Select v-model="form.type">
+            <Select v-model="form.type" aria-label="Type de catégorie">
 
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez un type de catégorie" />
@@ -55,7 +56,6 @@
         </CardFooter>
       </form>
     </Card>
-
   </div>
 </template>
 <script setup>

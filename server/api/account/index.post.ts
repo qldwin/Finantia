@@ -4,10 +4,9 @@ import { accounts } from '~~/drizzle/schema/accounts';
 import { requireAuth } from '#server/utils/auth';
 
 export default defineEventHandler(async (event) => {
-    await requireAuth(event);
+    const user = await requireAuth(event);
 
     const body = await readBody(event);
-    const user = event.context.user;
 
     try {
         const newAccount = await db.insert(accounts).values({

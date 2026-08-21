@@ -15,6 +15,7 @@
                 type="text"
                 placeholder="Rechercher..."
                 class="bg-transparent border-none text-sm outline-none placeholder:text-neutral-500 text-neutral-900 dark:text-neutral-100 transition-all duration-300 ease-in-out w-32 sm:w-48 focus:w-48 sm:focus:w-80"
+                aria-label="Rechercher des transactions"
             />
           </div>
 
@@ -26,6 +27,7 @@
                 type="file"
                 accept=".csv"
                 class="hidden"
+                aria-label="Importer un fichier CSV"
                 @change="handleFileUpload"
             >
             <Button

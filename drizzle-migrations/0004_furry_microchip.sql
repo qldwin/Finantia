@@ -1,0 +1,2 @@
+CREATE TYPE "public"."typeAccountEnum" AS ENUM('courant', 'livret_a', 'livret_jeune', 'pea', 'pel', 'lep', 'cel', 'assurance_vie', 'titre', 'autre');--> statement-breakpoint
+ALTER TABLE "accounts" RENAME COLUMN "accountType" TO "typeAccount";

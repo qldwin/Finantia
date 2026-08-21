@@ -22,6 +22,7 @@
                 class="w-full px-3 py-2 dark:border-button-1 focus:outline-none focus:ring-1 focus:ring-button-3 transition-colors"
                 placeholder="Ex: Salaire, Courses Leclerc, Loyer..."
                 required
+                aria-label="Description de la transaction"
             />
           </Field>
           <Field>
@@ -37,6 +38,7 @@
                   step="any"
                   placeholder="0.00"
                   required
+                  aria-label="Montant de la transaction"
               />
               <span class="absolute right-10 top-1/2 transform -translate-y-1/2 text-neutral-500">€</span>
             </div>
@@ -66,6 +68,7 @@
             </FieldLabel>
             <Select
                 v-model="form.categoryId"
+                aria-label="Catégorie"
             >
               <SelectTrigger
                   id="category"
