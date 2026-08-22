@@ -7,7 +7,6 @@ import {assoAccountsCategories} from "./associations/assoAccountsCategories";
 import {senderRecipient} from "./senderRecipient";
 import {typeAccountEnum} from "./accountType";
 
-// Table Account
 export const accounts = pgTable('accounts', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     userId: uuid('userId').references(() => users.id).notNull(),

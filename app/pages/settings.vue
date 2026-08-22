@@ -60,7 +60,7 @@
               <ItemActions class="flex-row-reverse">
                 <Button variant="outline" size="sm"
                         class="cursor-pointer text-white border-neutral-200 dark:border-neutral-750 bg-primary-700 hover:bg-primary-500"
-                        @click="openAccountModal"
+                        @click="() => navigateTo('/accounts')"
                 >
                   Gérer les comptes bancaires
                 </Button>
@@ -68,9 +68,6 @@
             </div>
           </ItemContent>
         </Item>
-
-        <!-- Modal de gestion des Comptes Bancaires -->
-        <AccountManagementModal :is-open="accountModalOpen" @update:isOpen="setAccountModalOpen"/>
       </div>
     </div>
   </div>
@@ -79,11 +76,9 @@
 <script setup>
 import {ref} from 'vue';
 import CsvImportModal from '~/components/CsvImportModal.vue';
-import AccountManagementModal from '~/components/AccountManagementModal.vue';
 
 // --- STATE ---
 const csvImportModalOpen = ref(false);
-const accountModalOpen = ref(false);
 
 // --- ACTIONS ---
 const openCsvImportModal = () => {
@@ -92,13 +87,5 @@ const openCsvImportModal = () => {
 
 const setCsvImportModalOpen = (value) => {
   csvImportModalOpen.value = value;
-};
-
-const openAccountModal = () => {
-  accountModalOpen.value = true;
-};
-
-const setAccountModalOpen = (value) => {
-  accountModalOpen.value = value;
 };
 </script>

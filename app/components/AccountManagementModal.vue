@@ -63,7 +63,7 @@ const props = defineProps({
 });
 
 // --- EMITS ---
-const emit = defineEmits(['update:isOpen']);
+const emit = defineEmits(['update:isOpen', 'account-added']);
 
 // --- STATE ---
 const newAccount = ref({
@@ -91,6 +91,7 @@ async function addAccount() {
         }
       });
       newAccount.value = {name: '', type: ''};
+      emit('account-added');
       updateIsOpen(false);
     } catch (error) {
       console.error('Erreur lors de l\'ajout du compte', error);
