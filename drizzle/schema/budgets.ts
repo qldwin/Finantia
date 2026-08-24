@@ -4,7 +4,6 @@ import {relations} from "drizzle-orm";
 import {accounts} from "./accounts";
 import {assoBudgetCategories} from "./associations/assoBudgetCategories";
 
-// Table Budget
 export const budgets = pgTable('budgets', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     userId: uuid('userId').references(() => users.id).notNull(),

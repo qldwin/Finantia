@@ -1,0 +1,1 @@
+ALTER TABLE "accounts" RENAME COLUMN "typeAccount" TO "TypeAccount";

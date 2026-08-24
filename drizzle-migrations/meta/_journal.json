@@ -36,6 +36,27 @@
       "when": 1787345056456,
       "tag": "0004_furry_microchip",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787566997758,
+      "tag": "0005_eager_katie_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787567330030,
+      "tag": "0006_ambitious_umar",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1787569641909,
+      "tag": "0007_petite_darwin",
+      "breakpoints": true
     }
   ]
 }

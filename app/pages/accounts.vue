@@ -47,6 +47,7 @@
 import { ref, computed } from 'vue';
 import AccountManagementModal from '~/components/AccountManagementModal.vue';
 import { accountLabels } from '~/utils/accountLabels';
+import {ItemContent} from "~/components/ui/item/index.js";
 
 // --- STATE ---
 const accountModalOpen = ref(false);

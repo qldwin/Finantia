@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "#server/db";
-import { users } from "~~/drizzle/schema";
+import {users, accounts} from "~~/drizzle/schema";
 import { encryptText, decryptText } from "#server/utils/crypto";
 
 export const getUserByEmail = async (email: string) => {
@@ -24,8 +24,19 @@ export const getUserById = async (userId: string) => {
 }
 
 export const createUser = async (userInsertData: typeof users.$inferInsert) => {
-    const newUser = await db.insert(users).values(userInsertData).returning();
-    return newUser[0];
+    return await db.transaction(async (tx) => {
+        const [newUser] = await tx.insert(users).values(userInsertData).returning();
+
+        await tx.insert(accounts).values({
+                userId: newUser.id,
+                accountName: 'Compte Courant',
+                typeAccount: 'courant',
+                balance: 0,
+                currency: 'EUR',
+        });
+
+        return newUser;
+    });
 }
 
 export const softDeleteUser = async (userId: string) => {
