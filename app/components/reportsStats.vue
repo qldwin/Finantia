@@ -1,6 +1,5 @@
 <template>
-  <div class="py-8">
-    <div class="max-w-6xl mx-auto">
+  <div>
 
       <div class="flex justify-center mb-10 w-full">
         <div
@@ -157,7 +156,6 @@
           </CardContent>
         </Card>
       </div>
-    </div>
   </div>
 </template>
 
