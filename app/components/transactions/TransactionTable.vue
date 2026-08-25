@@ -12,10 +12,10 @@
       <Table class="w-full" aria-label="Liste des transactions">
         <TableHeader>
           <TableRow class="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-750">
-            <TableHead class="table-heading">Date</TableHead>
-            <TableHead class="table-heading">Description</TableHead>
-            <TableHead class="table-heading text-right">Montant</TableHead>
-            <TableHead class="table-heading text-right">Actions</TableHead>
+            <TableHead class="text-left py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">Date</TableHead>
+            <TableHead class="text-left py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">Description</TableHead>
+            <TableHead class="text-right py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">Montant</TableHead>
+            <TableHead class="text-right py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody class="divide-y divide-neutral-200 dark:divide-neutral-800">
@@ -43,11 +43,11 @@
             </TableCell>
             <TableCell class="py-3 px-4 text-right whitespace-nowrap">
               <div class="flex justify-end space-x-2">
-                <Button class="table-action hover:text-primary-550" @click="$emit('edit', transaction)">
+                <Button class="cursor-pointer p-1 text-neutral-500 transition-colors rounded hover:text-primary-550" @click="$emit('edit', transaction)">
                   <span class="sr-only">Modifier</span>
                   <SquarePen/>
                 </Button>
-                <Button class="table-action hover:text-red-500" @click="$emit('delete', transaction)">
+                <Button class="cursor-pointer p-1 text-neutral-500 transition-colors rounded hover:text-red-500" @click="$emit('delete', transaction)">
                   <span class="sr-only">Supprimer</span>
                   <TrashIcon/>
                 </Button>
@@ -93,13 +93,3 @@ const formatDate = (dateString) => {
   }).format(new Date(dateString))
 }
 </script>
-
-<style scoped>
-.table-heading {
-  @apply text-left py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold;
-}
-
-.table-action {
-  @apply cursor-pointer p-1 text-neutral-500 transition-colors rounded;
-}
-</style>

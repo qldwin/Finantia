@@ -4,11 +4,11 @@
       <h3 class="text-lg font-medium text-neutral-800 dark:text-neutral-50">{{ budget.name }}</h3>
 
       <div class="flex items-center space-x-2">
-        <Button class="budget-action hover:text-primary-550" @click="$emit('edit', budget)">
+        <Button class="cursor-pointer p-1 text-neutral-500 transition-colors rounded hover:text-primary-550" @click="$emit('edit', budget)">
           <span class="sr-only">Modifier</span>
           <SquarePen/>
         </Button>
-        <Button class="budget-action hover:text-red-500" @click="$emit('delete', budget)">
+        <Button class="cursor-pointer p-1 text-neutral-500 transition-colors rounded hover:text-red-500" @click="$emit('delete', budget)">
           <span class="sr-only">Supprimer</span>
           <TrashIcon/>
         </Button>
@@ -77,9 +77,3 @@ const formatCurrency = (amount) => new Intl.NumberFormat('fr-FR', {
 const formatDateRange = (startDate, endDate) =>
     `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`
 </script>
-
-<style scoped>
-.budget-action {
-  @apply cursor-pointer p-1 text-neutral-500 transition-colors rounded;
-}
-</style>
