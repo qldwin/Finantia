@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import {importTransactionsBulk} from "#server/services/transactions.service";
+import {assertCategoriesOwnership} from "#server/utils/categories";
 
 const importSchema = z.object({
     transactions: z.array(z.object({
@@ -26,6 +27,13 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
+        await assertCategoriesOwnership(
+            body.data.transactions
+                .map(transaction => transaction.selectedCategoryId)
+                .filter((categoryId): categoryId is string => Boolean(categoryId)),
+            user.id
+        )
+
         const count = await importTransactionsBulk(user.id, body.data.transactions);
         return {success: true, count};
     } catch (error: any) {

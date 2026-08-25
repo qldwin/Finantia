@@ -1,6 +1,7 @@
 import { db } from "#server/db";
 import { users } from "~~/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { establishOAuthSession } from "#server/utils/oauth";
 
 export default defineOAuthGoogleEventHandler({
     async onSuccess(event, { user }) {
@@ -27,19 +28,13 @@ export default defineOAuthGoogleEventHandler({
             dbUser = newUser;
         }
 
-        await setUserSession(event, {
-            user: {
-                id: dbUser.id,
-                email: dbUser.email,
-                name: dbUser.name,
-                authProvider: dbUser.authProvider || 'google',
-                twoFactorEnabled: dbUser.twoFactorEnabled ?? false
-            },
-            secure: { twoFactorPending: false },
-            loggedInAt: new Date()
+        return establishOAuthSession(event, {
+            id: dbUser.id,
+            email: dbUser.email,
+            name: dbUser.name,
+            authProvider: dbUser.authProvider || 'google',
+            twoFactorEnabled: dbUser.twoFactorEnabled ?? false
         })
-
-        return sendRedirect(event, '/');
     },
 
     async onError(event, error) {

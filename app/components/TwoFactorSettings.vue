@@ -121,6 +121,13 @@ const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
+watch(
+    () => user.value?.twoFactorEnabled,
+    (enabled) => {
+      if (typeof enabled === 'boolean') twoFactorEnabled.value = enabled
+    }
+)
+
 async function startSetup() {
   errorMessage.value = ''
   loading.value = true

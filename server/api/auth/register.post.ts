@@ -4,6 +4,7 @@ import { db } from '#server/db'
 import { accounts } from '~~/drizzle/schema'
 import { checkRateLimit, consumeRateLimitAttempt, resetRateLimit } from '#server/utils/rateLimit'
 import { getClientIP } from '#server/utils/clientIP'
+import { establishUserSession } from '#server/utils/auth'
 
 const registerSchema = z.object({
     email: z.string().email(),
@@ -50,16 +51,12 @@ export default defineEventHandler(async (event) => {
         console.error('Erreur création compte', e)
     }
 
-    await setUserSession(event, {
-        user: {
-            id: newUser.id,
-            email: newUser.email,
-            name: newUser.name,
-            authProvider: newUser.authProvider ?? 'local',
-            twoFactorEnabled: newUser.twoFactorEnabled ?? false
-        },
-        secure: { twoFactorPending: false },
-        loggedInAt: new Date()
+    await establishUserSession(event, {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        authProvider: newUser.authProvider ?? 'local',
+        twoFactorEnabled: newUser.twoFactorEnabled ?? false
     })
 
     return { success: true, user: newUser }

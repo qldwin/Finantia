@@ -1,6 +1,7 @@
 import {db} from "#server/db";
 import {eq} from "drizzle-orm";
 import {users} from "~~/drizzle/schema";
+import { establishOAuthSession } from "#server/utils/oauth";
 
 export default defineOAuthGitHubEventHandler({
     config: {
@@ -55,19 +56,13 @@ export default defineOAuthGitHubEventHandler({
             dbUser = newUser;
         }
 
-        await setUserSession(event, {
-            user: {
-                id: dbUser.id,
-                email: dbUser.email,
-                name: dbUser.name,
-                authProvider: dbUser.authProvider || 'github',
-                twoFactorEnabled: dbUser.twoFactorEnabled ?? false
-            },
-            secure: { twoFactorPending: false },
-            loggedInAt: new Date()
+        return establishOAuthSession(event, {
+            id: dbUser.id,
+            email: dbUser.email,
+            name: dbUser.name,
+            authProvider: dbUser.authProvider || 'github',
+            twoFactorEnabled: dbUser.twoFactorEnabled ?? false
         })
-
-        return sendRedirect(event, '/');
     },
 
     async onError(event, error) {

@@ -1,6 +1,7 @@
 import {z} from 'zod'
 import {createTransaction} from "#server/services/transactions.service";
 import {assertAccountOwnership} from "#server/utils/ownership";
+import {assertCategoryOwnership} from "#server/utils/categories";
 
 const createTransactionSchema = z.object({
     amount: z.number({message: "Le montant est requis"})
@@ -30,6 +31,7 @@ export default defineEventHandler(async (event) => {
 
     // Vérifier que le compte (si fourni) appartient bien à l'utilisateur
     await assertAccountOwnership(restBody.accountId, user.id)
+    await assertCategoryOwnership(categoryId, user.id)
 
     const transactionData = {
         ...restBody,
