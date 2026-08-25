@@ -46,6 +46,20 @@ export const requireAuth = async (event: H3Event) => {
         })
     }
 
+    if (session.user.twoFactorEnabled !== dbUser.twoFactorEnabled) {
+        const syncedUser = {
+            ...session.user,
+            twoFactorEnabled: dbUser.twoFactorEnabled
+        }
+
+        await setUserSession(event, {
+            ...session,
+            user: syncedUser
+        })
+
+        return syncedUser
+    }
+
     return session.user
 }
 
@@ -72,5 +86,25 @@ export const establishUserSession = async (event: H3Event, user: {
         user,
         secure: { twoFactorPending: user.twoFactorEnabled },
         ...(user.twoFactorEnabled ? {} : { loggedInAt: new Date() })
+    })
+}
+
+/** Met à jour les attributs utilisateur de la session sans recréer son contexte. */
+export const updateUserSession = async (
+    event: H3Event,
+    updates: Partial<{
+        id: string
+        email: string
+        name: string | null
+        authProvider: string
+        twoFactorEnabled: boolean
+    }>
+) => {
+    const session = await getUserSession(event)
+    if (!session?.user) return
+
+    await setUserSession(event, {
+        ...session,
+        user: { ...session.user, ...updates }
     })
 }

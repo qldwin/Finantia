@@ -3,6 +3,7 @@ import { verifyTOTP } from '@oslojs/otp'
 import { decodeBase32 } from '@oslojs/encoding'
 import { getUserTwoFactorSecret, updateUserTwoFactor } from '#server/services/user.service'
 import { checkRateLimit, consumeRateLimitAttempt, resetRateLimit } from '#server/utils/rateLimit'
+import { updateUserSession } from '#server/utils/auth'
 
 const schema = z.object({
     code: z.string().length(6)
@@ -41,6 +42,7 @@ export default defineEventHandler(async (event) => {
     await resetRateLimit('2fa-disable', session.id)
 
     await updateUserTwoFactor(session.id, false, null)
+    await updateUserSession(event, { twoFactorEnabled: false })
 
     return { success: true }
 })
