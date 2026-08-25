@@ -1,6 +1,6 @@
 <template>
   <div class="py-8">
-    <div class="max-w-3xl mx-auto">
+    <div class="w-full">
       <h1 class="text-3xl font-bold mb-6 text-neutral-900 dark:text-neutral-50">Profil utilisateur</h1>
       <Alert v-if="error" class="p-3 bg-red-100 border border-red-200 text-red-700 rounded-lg text-sm mb-4">
         {{ error }}

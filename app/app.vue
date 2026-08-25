@@ -2,7 +2,7 @@
   <div class="app">
     <NuxtRouteAnnouncer/>
     <Header-navbar-components/>
-    <main class="max-w-7xl mx-auto font-sans">
+    <main class="max-w-6xl mx-auto font-sans">
       <NuxtPage/>
     </main>
   </div>

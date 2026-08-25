@@ -1,6 +1,6 @@
 <template>
-  <div class="py-8 px-4">
-    <div class="max-w-4xl mx-auto">
+  <div class="py-8">
+    <div class="w-full">
 
       <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
         <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-50">Catégories</h1>
