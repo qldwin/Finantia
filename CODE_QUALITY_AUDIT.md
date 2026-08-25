@@ -36,6 +36,18 @@ Les handlers `server/api/auth/login.post.ts`, `server/api/auth/register.post.ts`
 
 **Changement.** Ces endpoints utilisent désormais `requireAuth`, ce qui réduit le nombre de chemins d'authentification et garantit le même comportement de session 2FA.
 
+### 5. Découper les pages frontend métier
+
+**Problème.** `app/pages/transactions.vue` mélangeait la barre d'actions, le tableau, le filtrage, l'import CSV et les appels CRUD. `app/pages/budget.vue` mélangeait le chargement, le calcul métier et tout le rendu d'une carte de budget.
+
+**Changement.** Les responsabilités d'interface sont maintenant isolées dans :
+
+- `app/components/transactions/TransactionToolbar.vue` pour la recherche, la sélection CSV et la création ;
+- `app/components/transactions/TransactionTable.vue` pour l'affichage, le formatage et les actions d'une transaction ;
+- `app/components/budgets/BudgetCard.vue` pour l'affichage d'un budget, sa progression et ses actions.
+
+Les pages conservent uniquement l'orchestration des données, les appels API et les modales. Les états inutilisés et le chargement de catégories redondant ont été supprimés.
+
 ## Recommandations restantes
 
 ### Priorité haute
@@ -57,6 +69,8 @@ Les handlers `server/api/auth/login.post.ts`, `server/api/auth/register.post.ts`
 
 - Ajouter des scripts `lint`, `typecheck` et `test` explicites dans `package.json`.
 - Ajouter des limites de taille et des types aux props des composants Vue complexes, notamment `profile.vue`, `transactions.vue` et `budget.vue`.
+- Découper `profile.vue` en composants `ProfileForm`, `EmailForm`, `PasswordForm` et `DeleteAccountDialog` lorsque les contrats de formulaire auront été typés.
+- Extraire l'import CSV de `transactions.vue` dans un composable `useTransactionImport` après ajout de tests sur les formats de date et de montant.
 - Supprimer les commentaires qui répètent le code et conserver uniquement les invariants métier ou de sécurité.
 - Documenter les conventions dans un `CONTRIBUTING.md` : structure des modules, validation, accès DB, tests et gestion des erreurs.
 

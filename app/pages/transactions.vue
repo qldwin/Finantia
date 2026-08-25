@@ -6,126 +6,20 @@
           <h1 class="text-4xl font-black tracking-tighter">Transactions</h1>
         </div>
 
-        <div class="flex items-center gap-4">
-          <div
-              class="flex items-center bg-white dark:bg-neutral-800 rounded-xl px-4 py-1.5 border border-neutral-200 dark:border-neutral-750 shadow-xl focus-within:border-primary-500/50 transition-all duration-300">
-            <Search class="h-4 w-4 text-neutral-400 mr-2 flex-shrink-0"/>
-            <Input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Rechercher..."
-                class="bg-transparent border-none text-sm outline-none placeholder:text-neutral-500 text-neutral-900 dark:text-neutral-100 transition-all duration-300 ease-in-out w-32 sm:w-48 focus:w-48 sm:focus:w-80"
-            />
-          </div>
-
-          <div class="h-6 w-[1px] bg-neutral-200 dark:bg-neutral-800 mx-1"/>
-
-          <div class="flex items-center">
-            <input
-                ref="fileInput"
-                type="file"
-                accept=".csv"
-                class="hidden"
-                @change="handleFileUpload"
-            >
-            <Button
-                class="cursor-pointer text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all duration-200 p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center active:scale-90"
-                :disabled="isParsing"
-                title="Importer CSV"
-                @click="$refs.fileInput.click()"
-            >
-              <ArrowUpFromLine v-if="!isParsing" class="h-5 w-5 stroke-[2]"/>
-            </Button>
-          </div>
-
-          <Button
-              class="cursor-pointer text-white border-neutral-200 dark:border-neutral-750 bg-primary-700 hover:bg-primary-500"
-              @click="openTransactionModal"
-          >
-            <PlusIcon class="h-4 w-4 stroke-[3]"/>
-            <span class="hidden sm:inline">Nouvelle transaction</span>
-          </Button>
-        </div>
+        <TransactionToolbar
+            v-model:search-query="searchQuery"
+            :is-parsing="isParsing"
+            @file-selected="handleFileUpload"
+            @create="openTransactionModal"
+        />
       </div>
 
-      <div class="bg-white dark:bg-neutral-800 shadow-sm rounded-lg border border-neutral-200 dark:border-neutral-700">
-        <div v-if="loading" class="flex justify-center py-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"/>
-        </div>
-
-        <div v-else-if="transactions.length === 0" class="py-8 text-center text-neutral-500">
-          <p>Aucune transaction enregistrée.</p>
-        </div>
-
-        <div v-else class="overflow-x-auto">
-          <Table class="w-full" aria-hidden="true">
-            <TableHeader>
-              <TableRow
-                  class="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-750">
-                <TableHead
-                    class="text-left py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">
-                  Date
-                </TableHead>
-                <TableHead
-                    class="text-left py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">
-                  Description
-                </TableHead>
-                <TableHead
-                    class="text-right py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">
-                  Montant
-                </TableHead>
-                <TableHead
-                    class="text-right py-3 px-4 text-neutral-700 dark:text-neutral-300 text-xs uppercase tracking-wider font-semibold">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody class="divide-y divide-neutral-200 dark:divide-neutral-800">
-              <TableRow v-for="transaction in filteredTransactions" :key="transaction.id"
-                        class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
-                <TableCell class="py-3 px-4 text-sm text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
-                  {{ formatDate(transaction.date) }}
-                </TableCell>
-
-                <TableCell class="py-3 px-4 text-sm text-neutral-800 dark:text-neutral-200">
-                  <div class="flex items-center">
-                    <span class="truncate max-w-[500px] sm:max-w-[700px]"
-                    >
-                      {{ transaction.description }}
-                    </span>
-                    <span v-if="transaction.category"
-                          class="ml-2 text-xs px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600">
-                      {{ transaction.category }}
-                  </span>
-                  </div>
-                </TableCell>
-
-                <TableCell class="py-3 px-4 text-sm text-right font-medium whitespace-nowrap"
-                           :class="getTransactionClass(transaction)">
-                  {{ getTransactionSign(transaction) }} {{ formatCurrency(transaction.amount) }}
-                </TableCell>
-
-                <TableCell class="py-3 px-4 text-right whitespace-nowrap">
-                  <div class="flex justify-end space-x-2">
-                    <Button
-                        class="cursor-pointer p-1 text-neutral-500 hover:text-primary-550 transition-colors rounded"
-                        @click="editTransaction(transaction)">
-                      <span class="sr-only">Modifier</span>
-                      <SquarePen/>
-                    </Button>
-                    <Button
-                        class="cursor-pointer p-1 text-neutral-500 hover:text-red-500 transition-colors rounded"
-                        @click="confirmDeleteTransaction(transaction)">
-                      <span class="sr-only">Supprimer</span>
-                      <TrashIcon/>
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+      <TransactionTable
+          :loading="loading"
+          :transactions="filteredTransactions"
+          @edit="editTransaction"
+          @delete="confirmDeleteTransaction"
+      />
     </div>
 
     <TransactionModal
@@ -139,14 +33,9 @@
 
 <script setup>
 import {ref, onMounted, computed} from 'vue';
-import {
-  Search,
-  ArrowUpFromLine,
-  PlusIcon,
-  TrashIcon,
-  SquarePen,
-} from 'lucide-vue-next';
 import Papa from 'papaparse';
+import TransactionToolbar from '~/components/transactions/TransactionToolbar.vue';
+import TransactionTable from '~/components/transactions/TransactionTable.vue';
 
 useHead({
   title: 'AirGap | Transactions',
@@ -175,33 +64,11 @@ definePageMeta({
 // --- ÉTAT ---
 const isImporting = ref(false);
 const isParsing = ref(false);
-const showMissingOnly = ref(false);
-const fileInput = ref(null);
-const categories = ref([]);
-const pendingImport = ref([]);
 
 const transactions = ref([]);
 const loading = ref(true);
 const showTransactionModal = ref(false);
 const selectedTransaction = ref(null);
-
-// --- HELPER FUNCTIONS ---
-const isIncome = (t) => t.typeTransaction === 'revenu';
-const getTransactionClass = (t) => isIncome(t) ? 'text-primary-550' : 'text-red-500';
-const getTransactionSign = (t) => isIncome(t) ? '+' : '-';
-
-const formatCurrency = (amount) => new Intl.NumberFormat('fr-FR', {
-  style: 'currency',
-  currency: 'EUR',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 18
-}).format(amount);
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('fr-FR', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
-};
 
 // --- CHARGEMENT DONNÉES ---
 const loadTransactions = async () => {
@@ -221,28 +88,7 @@ const loadTransactions = async () => {
   }
 };
 
-const loadCategories = async () => {
-  try {
-    const response = await fetch('/api/categories');
-    const data = await response.json();
-
-    if (Array.isArray(data)) {
-      categories.value = data;
-    } else if (data.categories && Array.isArray(data.categories)) {
-      categories.value = data.categories;
-    } else if (data.data && Array.isArray(data.data)) {
-      categories.value = data.data;
-    } else {
-      categories.value = [];
-    }
-  } catch (e) {
-    console.error("Erreur chargement catégories", e);
-    categories.value = [];
-  }
-};
-
 onMounted(() => {
-  loadCategories();
   loadTransactions();
 });
 
@@ -299,13 +145,10 @@ const parseCSV = (file) => {
 /**
  * Fonction principale simplifiée (Niveau 1).
  */
-const handleFileUpload = async (event) => {
-  const file = event.target.files?.[0];
+const handleFileUpload = async (file) => {
   if (!file) return;
 
   isParsing.value = true;
-  pendingImport.value = [];
-  showMissingOnly.value = true;
 
   try {
     await new Promise(resolve => setTimeout(resolve, 50));
@@ -332,15 +175,8 @@ const handleFileUpload = async (event) => {
     alert(`Erreur: ${err.message}`);
   } finally {
     isParsing.value = false;
-    if (fileInput.value) fileInput.value.value = '';
   }
 };
-
-const closeImportModal = () => {
-  pendingImport.value = [];
-  isParsing.value = false;
-  showMissingOnly.value = false;
-}
 
 // --- IMPORT CSV : SAUVEGARDE ---
 const saveTransactions = async (data) => {
@@ -357,8 +193,7 @@ const saveTransactions = async (data) => {
     });
 
     alert(`${response.count} transactions importées avec succès !`);
-    closeImportModal();
-    loadTransactions();
+    await loadTransactions();
 
   } catch (err) {
     console.error("Erreur lors de la sauvegarde :", err);
