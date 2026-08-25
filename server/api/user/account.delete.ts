@@ -1,21 +1,21 @@
 import { z } from 'zod'
 import { getUserByEmail, softDeleteUser } from '#server/services/user.service'
+import { requireAuth } from '#server/utils/auth'
 
 const deleteSchema = z.object({
     password: z.string().optional()
 })
 
 export default defineEventHandler(async (event) => {
-    const session = await getUserSession(event)
-    if (!session.user) throw createError({ statusCode: 401, message: 'Non authentifié' })
+    const user = await requireAuth(event)
 
     const result = await readValidatedBody(event, body => deleteSchema.safeParse(body))
     if (!result.success) throw createError({ statusCode: 400, message: 'Données invalides' })
 
-    const userInDb = await getUserByEmail(session.user.email)
+    const userInDb = await getUserByEmail(user.email)
     if (!userInDb) throw createError({ statusCode: 404, message: 'Utilisateur introuvable' })
 
-    if (session.user.authProvider === 'local') {
+    if (user.authProvider === 'local') {
         if (!result.data.password) {
             throw createError({ statusCode: 400, message: 'Mot de passe requis' })
         }
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    await softDeleteUser(session.user.id)
+    await softDeleteUser(user.id)
     await clearUserSession(event)
 
     return { success: true }

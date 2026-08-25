@@ -3,17 +3,14 @@ import { verifyTOTP } from '@oslojs/otp'
 import { decodeBase32 } from '@oslojs/encoding'
 import { getUserTwoFactorSecret } from '#server/services/user.service'
 import { checkRateLimit, consumeRateLimitAttempt, resetRateLimit } from '#server/utils/rateLimit'
+import { requirePendingTwoFactor } from '#server/utils/auth'
 
 const schema = z.object({
     code: z.string().length(6)
 })
 
 export default defineEventHandler(async (event) => {
-    const session = await getUserSession(event)
-
-    if (!session?.user || !session.secure?.twoFactorPending) {
-        throw createError({ statusCode: 403, message: 'Non autorisé' })
-    }
+    const session = await requirePendingTwoFactor(event)
 
     const result = await readValidatedBody(event, body => schema.safeParse(body))
     if (!result.success) {

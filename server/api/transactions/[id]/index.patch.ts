@@ -1,6 +1,7 @@
 import {z} from 'zod'
 import {updateTransaction} from "#server/services/transactions.service";
 import {assertAccountOwnership} from "#server/utils/ownership";
+import {assertCategoryOwnership} from "#server/utils/categories";
 
 const paramsSchema = z.object({
     id: z.string().uuid({message: "ID de transaction invalide"})
@@ -36,6 +37,7 @@ export default defineEventHandler(async (event) => {
 
     // Vérifier que le compte (si modifié) appartient bien à l'utilisateur
     await assertAccountOwnership(transactionFields.accountId, user.id)
+    await assertCategoryOwnership(categoryId, user.id)
 
     const dataToUpdate = {
         ...transactionFields,

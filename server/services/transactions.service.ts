@@ -27,7 +27,9 @@ const resolveCategory = async (
     rules: any[],
     categoryMap: Map<string, string>
 ): Promise<string | null> => {
-    if (t.selectedCategoryId) return String(t.selectedCategoryId);
+    if (t.selectedCategoryId && categoryMap.has(String(t.selectedCategoryId))) {
+        return String(t.selectedCategoryId);
+    }
 
     if (t.categoryName?.trim()) {
         const key = t.categoryName.toLowerCase().trim();
@@ -171,7 +173,10 @@ export const importTransactionsBulk = async (userId: string, rawTransactions: Re
             .where(or(eq(importRules.userId, userId), isNull(importRules.userId))))
             .sort((a, b) => b.keyword.length - a.keyword.length);
 
-        const categoryMap = new Map<string, string>((await tx.select().from(categories))
+        const categoryMap = new Map<string, string>((await tx.select({
+            id: categories.id,
+            name: categories.name
+        }).from(categories).where(or(eq(categories.userId, userId), isNull(categories.userId))))
             .map(c => [c.name.toLowerCase().trim(), c.id]));
 
         const existing = await tx.select().from(transactions).where(eq(transactions.userId, userId));

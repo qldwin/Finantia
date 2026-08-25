@@ -2,6 +2,7 @@ import {z} from 'zod'
 import {loginUser} from "#server/services/auth.service";
 import {checkRateLimit, consumeRateLimitAttempt, resetRateLimit} from '#server/utils/rateLimit';
 import {getClientIP} from '#server/utils/clientIP';
+import { establishUserSession } from '#server/utils/auth';
 
 const loginSchema = z.object({
     email: z.string().email(),
@@ -48,31 +49,13 @@ export default defineEventHandler(async (event) => {
     await resetRateLimit('login', clientIP)
     await resetRateLimit('login-email', emailKey)
 
-    if (user.twoFactorEnabled) {
-        await setUserSession(event, {
-            secure: { twoFactorPending: true },
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                authProvider: user.authProvider ?? 'local',
-                twoFactorEnabled: user.twoFactorEnabled
-            },
-        })
-        return { requiresTwoFactor: true }
-    }
-
-    await setUserSession(event, {
-        secure: { twoFactorPending: false },
-        user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            authProvider: user.authProvider ?? 'local',
-            twoFactorEnabled: user.twoFactorEnabled
-        },
-        loggedInAt: new Date()
+    await establishUserSession(event, {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        authProvider: user.authProvider ?? 'local',
+        twoFactorEnabled: user.twoFactorEnabled
     })
 
-    return {success: true}
+    return user.twoFactorEnabled ? { requiresTwoFactor: true } : { success: true }
 })

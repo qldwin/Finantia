@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { getUserByEmail, updateUserPassword } from '#server/services/user.service'
+import { requireAuth } from '#server/utils/auth'
 
 const passwordChangeSchema = z.object({
     currentPassword: z.string().min(1, 'Le mot de passe actuel est requis'),
@@ -11,10 +12,7 @@ const passwordChangeSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-    const session = await getUserSession(event)
-    if (!session.user) {
-        throw createError({ statusCode: 401, message: 'Non authentifié' })
-    }
+    const sessionUser = await requireAuth(event)
 
     const result = await readValidatedBody(event, body => passwordChangeSchema.safeParse(body))
     if (!result.success) {
@@ -23,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
     const { currentPassword, newPassword } = result.data
 
-    const userInDb = await getUserByEmail(session.user.email)
+    const userInDb = await getUserByEmail(sessionUser.email)
     if (!userInDb) {
         throw createError({ statusCode: 404, message: 'Utilisateur introuvable' })
     }
@@ -37,7 +35,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const newHashedPassword = await hashPassword(newPassword)
-    await updateUserPassword(session.user.id, newHashedPassword)
+    await updateUserPassword(sessionUser.id, newHashedPassword)
 
     return { success: true, message: 'Mot de passe modifié avec succès' }
 })
