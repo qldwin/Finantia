@@ -1,7 +1,11 @@
 export default defineNuxtRouteMiddleware(async () => {
   const { loggedIn, session, fetch: refreshSession } = useUserSession()
 
-  if (!loggedIn.value) await refreshSession()
+  // Revalide toujours la session pour éviter de conserver un état client obsolète
+  // après une suppression de compte ou une déconnexion.
+  await refreshSession()
+
+  if (!loggedIn.value) return
 
   if (session.value?.secure?.twoFactorPending) {
     return navigateTo('/auth/2fa')
