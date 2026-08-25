@@ -112,6 +112,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: ['guest']
+})
+
 useHead({
   title: "AirGap | S'enregistrer",
 })
@@ -136,20 +140,21 @@ async function handleRegister() {
     return;
   }
 
-  await $fetch('/api/auth/register', {
-    method: 'POST',
-    body: {
-      name: form.name,
-      email: form.email,
-      password: form.password
-    },
-  })
-      .then(() => {
-        navigateTo('/login');
-      })
-      .catch((error) => {
-        errorMessage.value = error.data?.message || "Une erreur est survenue lors de l'inscription";
-        console.error("Détails de l'erreur:", error.data);
-      });
+  try {
+    await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: {
+        name: form.name,
+        email: form.email,
+        password: form.password
+      },
+    })
+
+    await useUserSession().fetch()
+    await navigateTo('/')
+  } catch (error) {
+    errorMessage.value = error.data?.message || "Une erreur est survenue lors de l'inscription";
+    console.error("Détails de l'erreur:", error.data);
+  }
 }
 </script>
