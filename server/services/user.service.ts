@@ -27,12 +27,16 @@ export const createUser = async (userInsertData: typeof users.$inferInsert) => {
     return await db.transaction(async (tx) => {
         const [newUser] = await tx.insert(users).values(userInsertData).returning();
 
+        if (!newUser) {
+            throw new Error('User creation failed');
+        }
+
         await tx.insert(accounts).values({
-                userId: newUser.id,
-                accountName: 'Compte Courant',
-                typeAccount: 'courant',
-                balance: 0,
-                currency: 'EUR',
+            userId: newUser.id,
+            accountName: 'Compte Courant',
+            typeAccount: 'courant',
+            balance: '0',
+            currency: 'EUR',
         });
 
         return newUser;
