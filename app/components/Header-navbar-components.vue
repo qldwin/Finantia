@@ -10,7 +10,7 @@
             </Button>
           </div>
 
-          <nav aria-label="naviguation bar for desktop AirGap" class="hidden md:flex items-center space-x-20">
+          <nav aria-label="naviguation bar for desktop AirGap" class="hidden lg:flex items-center space-x-20">
             <Button class="nav-link" active-class="nav-link-active">
               <NuxtLink to="/" >Tableau de bord</NuxtLink>
             </Button>
@@ -34,7 +34,7 @@
               <Moon v-else />
             </Button>
 
-            <div class="hidden md:flex items-center space-x-2">
+            <div class="hidden lg:flex items-center space-x-2">
               <template v-if="loggedIn">
                 <div class="relative">
                   <Button
@@ -80,7 +80,7 @@
 
     <nav
         aria-label="naviguation menu for mobile version of AirGap"
-        class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
+        class="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
       <div class="flex justify-around items-center h-16 pb-2">
         <NuxtLink
             to="/"
