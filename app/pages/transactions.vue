@@ -9,8 +9,10 @@
         <TransactionToolbar
             v-model:search-query="searchQuery"
             :is-parsing="isParsing"
+            :is-predicting="isPredictingAll"
             @file-selected="handleFileUpload"
             @create="openTransactionModal"
+            @predict-all="predictAllTransactions"
         />
       </div>
 
@@ -65,6 +67,7 @@ definePageMeta({
 // --- ÉTAT ---
 const isImporting = ref(false);
 const isParsing = ref(false);
+const isPredictingAll = ref(false);
 
 const transactions = ref([]);
 const loading = ref(true);
@@ -260,6 +263,63 @@ const ensureCategoryForPrediction = async (predictedCategory, typeTransaction) =
     }
 
     throw error;
+  }
+};
+
+const predictAllTransactions = async () => {
+  const rows = transactions.value || [];
+  if (!rows.length) {
+    return;
+  }
+
+  isPredictingAll.value = true;
+  let updatedCount = 0;
+
+  try {
+    for (const transaction of rows) {
+      if (!transaction?.id) {
+        continue;
+      }
+
+      const prediction = await $fetch('/api/transactions/predict', {
+        method: 'POST',
+        body: {
+          libelle: transaction.description || '',
+          montant: Number(transaction.amount ?? 0)
+        }
+      });
+
+      const predictedCategoryName = prediction?.categorie || prediction?.category || prediction?.categoryName || prediction?.nomCategorie;
+      if (!predictedCategoryName) {
+        continue;
+      }
+
+      const transactionType = transaction.typeTransaction === 'revenu' ? 'revenu' : 'depense';
+      const category = await ensureCategoryForPrediction(predictedCategoryName, transactionType);
+
+      await $fetch(`/api/transactions/${transaction.id}`, {
+        method: 'PATCH',
+        body: {
+          categoryId: category.id,
+          typeTransaction: transactionType
+        }
+      });
+
+      updatedCount++;
+    }
+
+    if (updatedCount === 0) {
+      alert('Aucune transaction n\'a été prédite par l\'IA.');
+    } else {
+      alert(`${updatedCount} transactions ont été catégorisées par l\'IA.`);
+    }
+
+    await loadTransactions();
+  } catch (error) {
+    console.error('Erreur prédiction automatique de toutes les transactions:', error);
+    alert('Erreur lors de la prédiction automatique de toutes les transactions.');
+  } finally {
+    isPredictingAll.value = false;
   }
 };
 

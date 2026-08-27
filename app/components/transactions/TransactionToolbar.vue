@@ -1,5 +1,14 @@
 <template>
   <div class="flex items-center gap-4">
+    <Button
+        class="cursor-pointer text-white border-neutral-200 dark:border-neutral-750 bg-primary-700 hover:bg-primary-500"
+        :disabled="isPredicting || isParsing"
+        @click="$emit('predict-all')"
+    >
+      <Sparkles class="h-4 w-4 stroke-[2]"/>
+      <span class="hidden sm:inline">Catégorisation automatique</span>
+    </Button>
+
     <div
         class="flex items-center bg-white dark:bg-neutral-800 rounded-xl px-4 py-1.5 border border-neutral-200 dark:border-neutral-750 shadow-xl focus-within:border-primary-500/50 transition-all duration-300">
       <Search class="h-4 w-4 text-neutral-400 mr-2 flex-shrink-0"/>
@@ -7,6 +16,7 @@
           :model-value="searchQuery"
           type="text"
           placeholder="Rechercher..."
+          aria-label="Rechercher des transactions"
           class="bg-transparent border-none text-sm outline-none placeholder:text-neutral-500 text-neutral-900 dark:text-neutral-100 transition-all duration-300 ease-in-out w-32 sm:w-48 focus:w-48 sm:focus:w-80"
           @update:model-value="$emit('update:searchQuery', $event)"
       />
@@ -18,6 +28,7 @@
         ref="fileInput"
         type="file"
         accept=".csv"
+        aria-label="Importer un fichier CSV"
         class="hidden"
         @change="onFileSelected"
     >
@@ -42,7 +53,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { ArrowUpFromLine, PlusIcon, Search } from 'lucide-vue-next'
+import { ArrowUpFromLine, PlusIcon, Search, Sparkles } from 'lucide-vue-next'
 
 defineProps({
   searchQuery: {
@@ -52,10 +63,14 @@ defineProps({
   isParsing: {
     type: Boolean,
     default: false
+  },
+  isPredicting: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['update:searchQuery', 'file-selected', 'create'])
+const emit = defineEmits(['update:searchQuery', 'file-selected', 'create', 'predict-all'])
 const fileInput = ref(null)
 
 const onFileSelected = (event) => {
