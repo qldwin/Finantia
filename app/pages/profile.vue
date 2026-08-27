@@ -146,7 +146,7 @@
         </CardHeader>
         <CardContent class="flex flex-col gap-4">
           <Button
-              class="w-full cursor-pointer border hover:text-neutral-600 text-neutral-700 dark:text-neutral-300"
+              class="w-full md:hidden cursor-pointer border hover:text-neutral-600 text-neutral-700 dark:text-neutral-300"
               :disabled="isLoading"
               @click="logout"
           >
@@ -154,7 +154,7 @@
             <span v-else>Se déconnecter</span>
           </Button>
 
-          <Separator class="my-2 dark:bg-primary-50 bg-neutral-900" />
+          <Separator class="my-2 md:hidden dark:bg-primary-50 bg-neutral-900" />
 
           <div class="flex flex-col gap-2">
             <p class="text-sm font-medium text-red-600 dark:text-red-400">Zone dangereuse</p>
