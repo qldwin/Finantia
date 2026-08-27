@@ -30,7 +30,7 @@ services:
       - adminer_db_net
 
   airgap:
-    image: ghcr.io/qldwin/airgap:master
+    image: ghcr.io/airgap-org/airgap:master
     restart: always
     ports:
       - "3000:3000"
@@ -44,7 +44,7 @@ services:
       - airgap_db_net
 
   airgap-ai:
-    image: ghcr.io/airgap-org/airgap-ai:master
+    image: ghcr.io/airgap-org/airgap-ai:latest
     restart: always
     ports:
       - "8000:8000"
