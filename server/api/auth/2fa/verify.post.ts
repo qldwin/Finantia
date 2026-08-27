@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
 
     await setUserSession(event, {
         user: session.user,
-        secure: { twoFactorPending: false },
+        twoFactorPending: false,
         loggedInAt: new Date()
     })
 

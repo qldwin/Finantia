@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
                 authProvider: user.authProvider,
                 twoFactorEnabled: user.twoFactorEnabled
             },
-            secure: { twoFactorPending: false },
+            twoFactorPending: false,
             loggedInAt: new Date()
         });
 

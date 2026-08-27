@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
         event.context.user = session.user
     }
 
-    if (session.secure?.twoFactorPending) {
+    if (session.twoFactorPending) {
         return sendRedirect(event, '/auth/2fa', 302)
     }
 })

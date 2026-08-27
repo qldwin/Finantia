@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
   if (!loggedIn.value) return
 
-  if (session.value?.secure?.twoFactorPending) {
+  if (session.value?.twoFactorPending) {
     return navigateTo('/auth/2fa')
   }
 

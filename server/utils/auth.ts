@@ -12,8 +12,8 @@ declare module '#auth-utils' {
         twoFactorEnabled: boolean
     }
 
-    interface SecureSessionData {
-        twoFactorPending: boolean
+    interface UserSession {
+        twoFactorPending?: boolean
     }
 }
 
@@ -27,7 +27,7 @@ export const requireAuth = async (event: H3Event) => {
         })
     }
 
-    if (session.secure?.twoFactorPending) {
+    if (session.twoFactorPending) {
         throw createError({
             statusCode: 403,
             message: 'La vérification 2FA est requise'
@@ -67,7 +67,7 @@ export const requireAuth = async (event: H3Event) => {
 export const requirePendingTwoFactor = async (event: H3Event) => {
     const session = await getUserSession(event)
 
-    if (!session?.user || !session.secure?.twoFactorPending) {
+    if (!session?.user || !session.twoFactorPending) {
         throw createError({ statusCode: 403, message: 'Non autorisé' })
     }
 
@@ -84,7 +84,7 @@ export const establishUserSession = async (event: H3Event, user: {
 }) => {
     await setUserSession(event, {
         user,
-        secure: { twoFactorPending: user.twoFactorEnabled },
+        twoFactorPending: user.twoFactorEnabled,
         ...(user.twoFactorEnabled ? {} : { loggedInAt: new Date() })
     })
 }
