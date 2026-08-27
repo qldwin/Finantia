@@ -43,6 +43,15 @@ services:
     networks:
       - airgap_db_net
 
+  airgap-ai:
+    image: ghcr.io/airgap-org/airgap-ai:master
+    restart: always
+    ports:
+      - "8000:8000"
+    cap_drop:
+      - ALL
+    environment:
+      ALLOWED_HOSTS: 'airgap-ai.aldwin-weber.fr'
 
 volumes:
   postgres_data:
