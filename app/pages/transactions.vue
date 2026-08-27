@@ -232,38 +232,29 @@ const ensureCategoryForPrediction = async (predictedCategory, typeTransaction) =
   const normalizedPrediction = normalizeCategoryName(predictedCategory);
 
   const existingCategory = allCategories.find(cat =>
-      cat.typeTransaction === wantedType &&
-      normalizeCategoryName(cat.name) === normalizedPrediction
+      normalizeCategoryName(cat.name) === normalizedPrediction &&
+      (cat.typeTransaction === wantedType || cat.typeTransaction === 'non_categorise')
   );
 
   if (existingCategory) {
     return existingCategory;
   }
 
-  try {
-    const created = await $fetch('/api/categories', {
-      method: 'POST',
-      body: {
-        name: predictedCategory,
-        typeTransaction: wantedType,
-        isDefault: false
-      }
-    });
+  const closeMatch = allCategories.find(cat => {
+    const normalizedName = normalizeCategoryName(cat.name);
+    const predictionTokens = normalizedPrediction.split(/\s+/).filter(Boolean);
+    const categoryTokens = normalizedName.split(/\s+/).filter(Boolean);
+    if (!predictionTokens.length || !categoryTokens.length) return false;
 
-    return created.category;
-  } catch (error) {
-    const categoriesResponseAfterCreate = await $fetch('/api/categories');
-    const recreated = (categoriesResponseAfterCreate.categories || []).find(cat =>
-        cat.typeTransaction === wantedType &&
-        normalizeCategoryName(cat.name) === normalizedPrediction
-    );
+    const overlap = predictionTokens.filter(token => categoryTokens.includes(token)).length;
+    return overlap > 0 && (cat.typeTransaction === wantedType || cat.typeTransaction === 'non_categorise');
+  });
 
-    if (recreated) {
-      return recreated;
-    }
-
-    throw error;
+  if (closeMatch) {
+    return closeMatch;
   }
+
+  return null;
 };
 
 const predictAllTransactions = async () => {
@@ -311,7 +302,7 @@ const predictAllTransactions = async () => {
     if (updatedCount === 0) {
       alert('Aucune transaction n\'a été prédite par l\'IA.');
     } else {
-      alert(`${updatedCount} transactions ont été catégorisées par l\'IA.`);
+      alert(`${updatedCount} transactions ont été catégorisées par l'IA.`);
     }
 
     await loadTransactions();
@@ -341,6 +332,11 @@ const magicTransaction = async (transaction) => {
 
     const transactionType = transaction.typeTransaction === 'revenu' ? 'revenu' : 'depense';
     const category = await ensureCategoryForPrediction(predictedCategoryName, transactionType);
+
+    if (!category) {
+      alert('Aucune catégorie existante correspondante n\'a été trouvée pour cette prédiction.');
+      return;
+    }
 
     await $fetch(`/api/transactions/${transaction.id}`, {
       method: 'PATCH',

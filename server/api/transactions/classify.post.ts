@@ -1,6 +1,6 @@
 import {defineEventHandler} from 'h3';
 import {z} from 'zod';
-import {and, eq, isNull, or} from 'drizzle-orm';
+import {eq, isNull, or} from 'drizzle-orm';
 import {db} from "#server/db";
 import {categories} from "~~/drizzle/schema";
 import {requireAuth} from "#server/utils/auth";
@@ -23,32 +23,71 @@ const classifySchema = z.object({
 const normalizeCategoryName = (value = '') => value
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replaceAll('/&/g', ' et ')
     .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
-const resolvePredictedCategoryId = async (userId: string, categoryName: string, typeTransaction: 'depense' | 'revenu' | 'non_categorise') => {
-    const normalizedName = normalizeCategoryName(categoryName);
-    const matchingCategories = await db.select()
-        .from(categories)
-        .where(and(
-            or(eq(categories.userId, userId), isNull(categories.userId)),
-            eq(categories.typeTransaction, typeTransaction)
-        ));
+const findBestCategoryMatch = (prediction: string, candidates: Array<{ id: string, name: string, typeTransaction: string }>) => {
+    const normalizedPrediction = normalizeCategoryName(prediction);
+    const predictionTokens = normalizedPrediction.split(/\s+/).filter(Boolean);
 
-    const existing = matchingCategories.find((category) =>
-        normalizeCategoryName(category.name) === normalizedName
+    return candidates
+        .map((category) => {
+            const normalizedCategory = normalizeCategoryName(category.name);
+            const categoryTokens = normalizedCategory.split(/\s+/).filter(Boolean);
+
+            let score = 0;
+            if (normalizedCategory === normalizedPrediction) score += 100;
+
+            predictionTokens.forEach((token) => {
+                if (categoryTokens.includes(token)) score += 10;
+            });
+
+            categoryTokens.forEach((token) => {
+                if (predictionTokens.includes(token)) score += 5;
+            });
+
+            if (normalizedPrediction.includes(normalizedCategory) || normalizedCategory.includes(normalizedPrediction)) {
+                score += 25;
+            }
+
+            return { category, score };
+        })
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score)[0]?.category;
+};
+
+const resolvePredictedCategoryId = async (userId: string, categoryName: string, typeTransaction: 'depense' | 'revenu' | 'non_categorise') => {
+    const availableCategories = await db.select({
+        id: categories.id,
+        name: categories.name,
+        typeTransaction: categories.typeTransaction
+    })
+        .from(categories)
+        .where(or(eq(categories.userId, userId), isNull(categories.userId)));
+
+    const exactMatch = availableCategories.find((category) =>
+        normalizeCategoryName(category.name) === normalizeCategoryName(categoryName)
     );
 
-    if (existing) return existing.id;
+    if (exactMatch) return exactMatch.id;
 
-    const [created] = await db.insert(categories).values({
-        name: categoryName,
-        typeTransaction: typeTransaction,
-        userId,
-        isDefault: false
-    }).returning({id: categories.id});
+    const sameTypeCategories = availableCategories.filter((category) => category.typeTransaction === typeTransaction);
+    const bestMatch = findBestCategoryMatch(categoryName, sameTypeCategories);
+    if (bestMatch) return bestMatch.id;
 
-    return created?.id ?? null;
+    const fallback = availableCategories.find((category) => {
+        const normalized = normalizeCategoryName(category.name);
+        if (typeTransaction === 'non_categorise') {
+            return normalized.includes('non categorise') || normalized.includes('virement');
+        }
+        return false;
+    });
+
+    if (fallback) return fallback.id;
+
+    return null;
 };
 
 const predictCategoryForTransaction = async (transaction: any, userId: string) => {
