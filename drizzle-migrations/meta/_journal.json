@@ -29,6 +29,13 @@
       "when": 1779378940612,
       "tag": "0003_early_iron_patriot",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787841408141,
+      "tag": "0004_curved_phantom_reporter",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+DROP TABLE "import_rules" CASCADE;

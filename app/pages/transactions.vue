@@ -19,6 +19,7 @@
           :transactions="filteredTransactions"
           @edit="editTransaction"
           @delete="confirmDeleteTransaction"
+          @magic="magicTransaction"
       />
     </div>
 
@@ -78,6 +79,7 @@ const loadTransactions = async () => {
     transactions.value = (response.transactions || []).map(t => ({
       ...t,
       category: t.category?.name || '',
+      categoryId: t.category?.id || null,
       amount: Number(t.amount),
       typeTransaction: t.typeTransaction
     }));
@@ -212,6 +214,87 @@ const openTransactionModal = () => {
 const editTransaction = (transaction) => {
   selectedTransaction.value = {...transaction};
   showTransactionModal.value = true;
+};
+
+const normalizeCategoryName = (value = '') => value
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .trim();
+
+const ensureCategoryForPrediction = async (predictedCategory, typeTransaction) => {
+  const categoriesResponse = await $fetch('/api/categories');
+  const allCategories = categoriesResponse.categories || [];
+  const wantedType = typeTransaction === 'revenu' ? 'revenu' : 'depense';
+  const normalizedPrediction = normalizeCategoryName(predictedCategory);
+
+  const existingCategory = allCategories.find(cat =>
+      cat.typeTransaction === wantedType &&
+      normalizeCategoryName(cat.name) === normalizedPrediction
+  );
+
+  if (existingCategory) {
+    return existingCategory;
+  }
+
+  try {
+    const created = await $fetch('/api/categories', {
+      method: 'POST',
+      body: {
+        name: predictedCategory,
+        typeTransaction: wantedType,
+        isDefault: false
+      }
+    });
+
+    return created.category;
+  } catch (error) {
+    const categoriesResponseAfterCreate = await $fetch('/api/categories');
+    const recreated = (categoriesResponseAfterCreate.categories || []).find(cat =>
+        cat.typeTransaction === wantedType &&
+        normalizeCategoryName(cat.name) === normalizedPrediction
+    );
+
+    if (recreated) {
+      return recreated;
+    }
+
+    throw error;
+  }
+};
+
+const magicTransaction = async (transaction) => {
+  try {
+    const prediction = await $fetch('/api/transactions/predict', {
+      method: 'POST',
+      body: {
+        libelle: transaction.description || '',
+        montant: Number(transaction.amount)
+      }
+    });
+
+    const predictedCategoryName = prediction?.categorie;
+    if (!predictedCategoryName) {
+      alert('Aucune catégorie prédite par l\'IA.');
+      return;
+    }
+
+    const transactionType = transaction.typeTransaction === 'revenu' ? 'revenu' : 'depense';
+    const category = await ensureCategoryForPrediction(predictedCategoryName, transactionType);
+
+    await $fetch(`/api/transactions/${transaction.id}`, {
+      method: 'PATCH',
+      body: {
+        categoryId: category.id,
+        typeTransaction: transactionType
+      }
+    });
+
+    await loadTransactions();
+  } catch (error) {
+    console.error('Erreur catégorisation automatique:', error);
+    alert('Erreur catégorisation automatique.');
+  }
 };
 
 const onTransactionSaved = () => {

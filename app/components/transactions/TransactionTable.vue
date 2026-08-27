@@ -51,6 +51,10 @@
                   <span class="sr-only">Supprimer</span>
                   <TrashIcon/>
                 </Button>
+                <Button class="cursor-pointer p-1 text-neutral-500 transition-colors rounded hover:text-primary-550" @click="$emit('magic', transaction)">
+                  <span class="sr-only">Catégoriser</span>
+                  <Sparkles/>
+                </Button>
               </div>
             </TableCell>
           </TableRow>
@@ -61,7 +65,7 @@
 </template>
 
 <script setup>
-import { SquarePen, TrashIcon } from 'lucide-vue-next'
+import { SquarePen, TrashIcon, Sparkles } from 'lucide-vue-next'
 
 defineProps({
   loading: Boolean,
@@ -71,7 +75,7 @@ defineProps({
   }
 })
 
-defineEmits(['edit', 'delete'])
+defineEmits(['edit', 'delete', 'magic'])
 
 const isIncome = (transaction) => transaction.typeTransaction === 'revenu'
 const getTransactionClass = (transaction) => isIncome(transaction) ? 'text-primary-550' : 'text-red-500'

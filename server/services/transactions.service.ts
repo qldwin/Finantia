@@ -1,7 +1,6 @@
-import {and, desc, eq, isNull, or} from 'drizzle-orm'
+import {and, desc, eq} from 'drizzle-orm'
 import {assoTransactionsCategories, categories, transactions} from "~~/drizzle/schema";
 import {db} from "#server/db";
-import {importRules} from "~~/drizzle/schema/importRules";
 
 /**
  * Types et utilitaires
@@ -14,17 +13,10 @@ const getTransactionSignature = (date: Date, amount: number, description: string
     return `${dateStr}_${amount}_${description.trim()}`;
 };
 
-const findCategoryByRules = (description: string, rules: any[]): string | null => {
-    const lowDesc = description.toLowerCase();
-    const rule = rules.find(r => lowDesc.includes(r.keyword.toLowerCase()));
-    return rule ? rule.categoryId : null;
-};
-
 const resolveCategory = async (
     tx: any,
     t: any,
     typeValue: "depense" | "revenu" | "non_categorise",
-    rules: any[],
     categoryMap: Map<string, string>
 ): Promise<string | null> => {
     if (t.selectedCategoryId && categoryMap.has(String(t.selectedCategoryId))) {
@@ -37,6 +29,8 @@ const resolveCategory = async (
 
         const [newCat] = await tx.insert(categories).values({
             name: t.categoryName.trim(),
+            typeTransaction: typeValue,
+            userId: t.userId ?? null,
             isDefault: false
         }).returning({id: categories.id});
 
@@ -44,7 +38,7 @@ const resolveCategory = async (
         return newCat.id;
     }
 
-    return findCategoryByRules(t.description || '', rules);
+    return t.selectedCategoryId ?? null;
 };
 
 /**
@@ -169,14 +163,11 @@ export const createTransaction = async (data: TransactionInsert, categoryId?: st
 export const importTransactionsBulk = async (userId: string, rawTransactions: Record<string, any>[]) => {
     return await db.transaction(async (tx) => {
         const now = new Date();
-        const rules = (await tx.select().from(importRules)
-            .where(or(eq(importRules.userId, userId), isNull(importRules.userId))))
-            .sort((a, b) => b.keyword.length - a.keyword.length);
 
         const categoryMap = new Map<string, string>((await tx.select({
             id: categories.id,
             name: categories.name
-        }).from(categories).where(or(eq(categories.userId, userId), isNull(categories.userId))))
+        }).from(categories).where(eq(categories.userId, userId)))
             .map(c => [c.name.toLowerCase().trim(), c.id]));
 
         const existing = await tx.select().from(transactions).where(eq(transactions.userId, userId));
@@ -201,7 +192,7 @@ export const importTransactionsBulk = async (userId: string, rawTransactions: Re
             }
 
             const typeValue = t.typeTransaction || (Number(t.amount) >= 0 ? 'revenu' : 'depense');
-            const matchedId = await resolveCategory(tx, t, typeValue, rules, categoryMap);
+            const matchedId = await resolveCategory(tx, t, typeValue, categoryMap);
 
             transactionsToInsert.push({
                 userId,
