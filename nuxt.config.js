@@ -23,6 +23,9 @@ export default defineNuxtConfig({
             password: process.env.NUXT_SESSION_PASSWORD,
             maxAge: 60 * 60 * 24 * 30,
         },
+        ai: {
+            predictUrl: process.env.AIRGAP_AI_PREDICT_URL || 'https://airgap-ai.aldwin-weber.fr/predire',
+        },
         oauth: {
             google: {
                 clientId: process.env.GOOGLE_CLIENT_ID,

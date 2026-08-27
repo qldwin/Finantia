@@ -9,8 +9,10 @@
         <TransactionToolbar
             v-model:search-query="searchQuery"
             :is-parsing="isParsing"
+            :is-predicting="isPredictingAll"
             @file-selected="handleFileUpload"
             @create="openTransactionModal"
+            @predict-all="predictAllTransactions"
         />
       </div>
 
@@ -19,6 +21,7 @@
           :transactions="filteredTransactions"
           @edit="editTransaction"
           @delete="confirmDeleteTransaction"
+          @magic="magicTransaction"
       />
     </div>
 
@@ -64,6 +67,7 @@ definePageMeta({
 // --- ÉTAT ---
 const isImporting = ref(false);
 const isParsing = ref(false);
+const isPredictingAll = ref(false);
 
 const transactions = ref([]);
 const loading = ref(true);
@@ -78,6 +82,7 @@ const loadTransactions = async () => {
     transactions.value = (response.transactions || []).map(t => ({
       ...t,
       category: t.category?.name || '',
+      categoryId: t.category?.id || null,
       amount: Number(t.amount),
       typeTransaction: t.typeTransaction
     }));
@@ -212,6 +217,140 @@ const openTransactionModal = () => {
 const editTransaction = (transaction) => {
   selectedTransaction.value = {...transaction};
   showTransactionModal.value = true;
+};
+
+const normalizeCategoryName = (value = '') => value
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .trim();
+
+const ensureCategoryForPrediction = async (predictedCategory, typeTransaction) => {
+  const categoriesResponse = await $fetch('/api/categories');
+  const allCategories = categoriesResponse.categories || [];
+  const wantedType = typeTransaction === 'revenu' ? 'revenu' : 'depense';
+  const normalizedPrediction = normalizeCategoryName(predictedCategory);
+
+  const existingCategory = allCategories.find(cat =>
+      normalizeCategoryName(cat.name) === normalizedPrediction &&
+      (cat.typeTransaction === wantedType || cat.typeTransaction === 'non_categorise')
+  );
+
+  if (existingCategory) {
+    return existingCategory;
+  }
+
+  const closeMatch = allCategories.find(cat => {
+    const normalizedName = normalizeCategoryName(cat.name);
+    const predictionTokens = normalizedPrediction.split(/\s+/).filter(Boolean);
+    const categoryTokens = normalizedName.split(/\s+/).filter(Boolean);
+    if (!predictionTokens.length || !categoryTokens.length) return false;
+
+    const overlap = predictionTokens.filter(token => categoryTokens.includes(token)).length;
+    return overlap > 0 && (cat.typeTransaction === wantedType || cat.typeTransaction === 'non_categorise');
+  });
+
+  if (closeMatch) {
+    return closeMatch;
+  }
+
+  return null;
+};
+
+const predictAllTransactions = async () => {
+  const rows = transactions.value || [];
+  if (!rows.length) {
+    return;
+  }
+
+  isPredictingAll.value = true;
+  let updatedCount = 0;
+
+  try {
+    for (const transaction of rows) {
+      if (!transaction?.id) {
+        continue;
+      }
+
+      const prediction = await $fetch('/api/transactions/predict', {
+        method: 'POST',
+        body: {
+          libelle: transaction.description || '',
+          montant: Number(transaction.amount ?? 0)
+        }
+      });
+
+      const predictedCategoryName = prediction?.categorie || prediction?.category || prediction?.categoryName || prediction?.nomCategorie;
+      if (!predictedCategoryName) {
+        continue;
+      }
+
+      const transactionType = transaction.typeTransaction === 'revenu' ? 'revenu' : 'depense';
+      const category = await ensureCategoryForPrediction(predictedCategoryName, transactionType);
+
+      await $fetch(`/api/transactions/${transaction.id}`, {
+        method: 'PATCH',
+        body: {
+          categoryId: category.id,
+          typeTransaction: transactionType
+        }
+      });
+
+      updatedCount++;
+    }
+
+    if (updatedCount === 0) {
+      alert('Aucune transaction n\'a été prédite par l\'IA.');
+    } else {
+      alert(`${updatedCount} transactions ont été catégorisées par l'IA.`);
+    }
+
+    await loadTransactions();
+  } catch (error) {
+    console.error('Erreur prédiction automatique de toutes les transactions:', error);
+    alert('Erreur lors de la prédiction automatique de toutes les transactions.');
+  } finally {
+    isPredictingAll.value = false;
+  }
+};
+
+const magicTransaction = async (transaction) => {
+  try {
+    const prediction = await $fetch('/api/transactions/predict', {
+      method: 'POST',
+      body: {
+        libelle: transaction.description || '',
+        montant: Number(transaction.amount)
+      }
+    });
+
+    const predictedCategoryName = prediction?.categorie;
+    if (!predictedCategoryName) {
+      alert('Aucune catégorie prédite par l\'IA.');
+      return;
+    }
+
+    const transactionType = transaction.typeTransaction === 'revenu' ? 'revenu' : 'depense';
+    const category = await ensureCategoryForPrediction(predictedCategoryName, transactionType);
+
+    if (!category) {
+      alert('Aucune catégorie existante correspondante n\'a été trouvée pour cette prédiction.');
+      return;
+    }
+
+    await $fetch(`/api/transactions/${transaction.id}`, {
+      method: 'PATCH',
+      body: {
+        categoryId: category.id,
+        typeTransaction: transactionType
+      }
+    });
+
+    await loadTransactions();
+  } catch (error) {
+    console.error('Erreur catégorisation automatique:', error);
+    alert('Erreur catégorisation automatique.');
+  }
 };
 
 const onTransactionSaved = () => {
