@@ -5,6 +5,7 @@ import {provideChartContext} from "./interface.js"
 <script setup>
 import { cn } from "~/lib/utils";
 import { computed, toRefs } from "vue";
+import ChartStyle from "~/components/ui/chart/ChartStyle.vue";
 
 const props = defineProps({
   id: { type: null, required: false },
