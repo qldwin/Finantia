@@ -9,7 +9,7 @@
         {{ success }}
       </Alert>
 
-      <Form @submit.prevent="updateProfile">
+      <form @submit.prevent="updateProfile">
         <Card
             class="mb-3 bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-100 dark:border-neutral-800 hover:shadow-md transition-shadow duration-300">
           <CardHeader>
@@ -42,10 +42,10 @@
             </Button>
           </CardFooter>
         </Card>
-      </Form>
+      </form>
 
       <div v-if="authProvider === 'local'">
-        <Form @submit.prevent="updateEmail">
+        <form @submit.prevent="updateEmail">
           <Card
               class="mb-3 bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-100 dark:border-neutral-800 hover:shadow-md transition-shadow duration-300">
             <CardHeader>
@@ -77,9 +77,9 @@
               </Button>
             </CardFooter>
           </Card>
-        </Form>
+        </form>
 
-        <Form @submit.prevent="updatePassword">
+        <form @submit.prevent="updatePassword">
           <Card
               class="mb-3 bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-100 dark:border-neutral-800 hover:shadow-md transition-shadow duration-300">
             <CardHeader>
@@ -134,10 +134,10 @@
               </Button>
             </CardFooter>
           </Card>
-        </Form>
+        </form>
       </div>
 
-      <TwoFactorSettings v-if="authProvider === 'local'" class="mb-3" />
+      <TwoFactorSettings v-if="authProvider === 'local'" class="mb-3"/>
 
       <Card
           class="bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-100 dark:border-neutral-800 hover:shadow-md transition-shadow duration-300">
@@ -155,7 +155,8 @@
             </AlertDialogTrigger>
 
             <!-- Compte local : demande le mot de passe -->
-            <AlertDialogContent v-if="authProvider === 'local'" class="bg-white dark:bg-neutral-900/60 backdrop-blur-sm">
+            <AlertDialogContent v-if="authProvider === 'local'"
+                                class="bg-white dark:bg-neutral-900/60 backdrop-blur-sm">
               <AlertDialogHeader>
                 <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -172,7 +173,8 @@
               </div>
 
               <AlertDialogFooter>
-                <AlertDialogCancel class="border cursor-pointer hover:text-neutral-600" @click="passwordForDeletion = ''">
+                <AlertDialogCancel class="border cursor-pointer hover:text-neutral-600"
+                                   @click="passwordForDeletion = ''">
                   Annuler
                 </AlertDialogCancel>
                 <Button
@@ -259,8 +261,6 @@ watchEffect(() => {
     profileForm.value.name = user.value.name || ''
     emailForm.value.email = user.value.email || ''
     authProvider.value = user.value.authProvider || 'local'
-    console.log("Voici ce que contient mon utilisateur :", user.value)
-    console.log("authProvider:", JSON.stringify(authProvider.value))
   }
 })
 
@@ -384,7 +384,7 @@ async function confirmDeleteAccount() {
     await $fetch('/api/user/account', {
       method: 'DELETE',
       body: authProvider.value === 'local'
-          ? { password: passwordForDeletion.value }
+          ? {password: passwordForDeletion.value}
           : {}
     })
 
