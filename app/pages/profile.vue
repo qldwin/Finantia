@@ -142,17 +142,28 @@
       <Card
           class="bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-gray-100 dark:border-neutral-800 hover:shadow-md transition-shadow duration-300">
         <CardHeader>
-          <CardTitle>Supprimez votre compte</CardTitle>
-          <CardDescription>Attention, la suppression de votre compte est définitive.</CardDescription>
+          <CardTitle>Gestion du compte</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent class="flex flex-col gap-4">
+          <Button
+              class="w-full md:hidden cursor-pointer border hover:text-neutral-600 text-neutral-700 dark:text-neutral-300"
+              :disabled="isLoading"
+              @click="logout"
+          >
+            <span v-if="isLoading">Déconnexion...</span>
+            <span v-else>Se déconnecter</span>
+          </Button>
 
-          <AlertDialog v-model:open="isDeleteDialogOpen">
-            <AlertDialogTrigger asChild>
-              <Button class="border cursor-pointer hover:text-primary-550" variant="destructive">
-                Supprimer mon compte
-              </Button>
-            </AlertDialogTrigger>
+          <Separator class="my-2 md:hidden dark:bg-primary-50 bg-neutral-900" />
+
+          <div class="flex flex-col gap-2">
+            <p class="text-sm font-medium text-red-600 dark:text-red-400">Zone dangereuse</p>
+            <AlertDialog v-model:open="isDeleteDialogOpen">
+              <AlertDialogTrigger asChild>
+                <Button class="w-full cursor-pointer bg-red-600 hover:bg-red-700 text-white border border-red-700" variant="destructive">
+                  Supprimer mon compte
+                </Button>
+              </AlertDialogTrigger>
 
             <!-- Compte local : demande le mot de passe -->
             <AlertDialogContent v-if="authProvider === 'local'"
@@ -214,6 +225,7 @@
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -373,6 +385,16 @@ async function updatePassword() {
     passwordForm.value.currentPassword = ''
     passwordForm.value.newPassword = ''
     passwordForm.value.confirmPassword = ''
+  }
+}
+
+async function logout() {
+  isLoading.value = true
+  try {
+    await clear()
+    await navigateTo('/login')
+  } finally {
+    isLoading.value = false
   }
 }
 
